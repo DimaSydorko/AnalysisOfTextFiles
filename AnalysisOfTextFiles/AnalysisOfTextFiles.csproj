@@ -4,8 +4,13 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
-        <UseWindowsForms>true</UseWindowsForms>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
     </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Dialogs" />
+      <Folder Include="Starage" />
+      <Folder Include="Utils" />
+    </ItemGroup>
 
 </Project>

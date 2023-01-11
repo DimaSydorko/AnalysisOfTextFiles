@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisOfTextFiles", "AnalysisOfTextFiles\AnalysisOfTextFiles.csproj", "{09CAA9DB-0404-46B8-AA24-80DBCF9502EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalysisOfTextFiles", "AnalysisOfTextFiles\AnalysisOfTextFiles.csproj", "{32E91584-0520-4881-802F-8155D48EEA79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09CAA9DB-0404-46B8-AA24-80DBCF9502EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{09CAA9DB-0404-46B8-AA24-80DBCF9502EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{09CAA9DB-0404-46B8-AA24-80DBCF9502EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{09CAA9DB-0404-46B8-AA24-80DBCF9502EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32E91584-0520-4881-802F-8155D48EEA79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32E91584-0520-4881-802F-8155D48EEA79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32E91584-0520-4881-802F-8155D48EEA79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32E91584-0520-4881-802F-8155D48EEA79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
