@@ -5,28 +5,39 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnalysisOfTextFiles"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Analysis Of Text Files" Height="600" Width="450" WindowStartupLocation="CenterScreen"
+        Background="#ADD8FF">
     <Grid>
-        <Label Content="Please specify password to load the document" HorizontalAlignment="Left" Margin="15,0,0,0"
-               VerticalAlignment="Top" />
-        <TextBox Name="txtPassword" HorizontalAlignment="Left" Text="" TextWrapping="Wrap"
-                 VerticalAlignment="Top" Width="311" Margin="20,25,0,0" />
-        <Button Name="okBtn" Visibility="Visible" Width="75" Height="23" Content="OK"
-                VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,10">
-        </Button>
-        <Button Name="cancelBtn" Visibility="Visible" Width="75" Height="23" Content="Cancel"
-                VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="110,0,0,10">
-        </Button>
-        <ToolBar DockPanel.Dock="Top" Height="32">
-            <Button Name="openFileBtn">
-                <!-- <Image Source="/Resources/open_file.ico" /> -->
-                --
-            </Button>
-        </ToolBar>
-        <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
-            <StackPanel>
-                <!-- <Image Name="imageMain" Stretch="Uniform" /> -->
+        <!-- <Label Content="Please specify password to load the document" HorizontalAlignment="Left" Margin="15,0,0,0" -->
+        <!--        VerticalAlignment="Top" /> -->
+        <!-- <TextBox Name="txtPassword" HorizontalAlignment="Left" Text="" TextWrapping="Wrap" -->
+        <!--          VerticalAlignment="Top" Width="311" Margin="20,25,0,0" /> -->
+        <!-- <Button Name="okBtn" Visibility="Visible" Width="75" Height="23" Content="OK" -->
+        <!--         VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,10"> -->
+        <!-- </Button> -->
+        <!-- <Button Name="cancelBtn" Visibility="Visible" Width="75" Height="23" Content="Cancel" -->
+        <!--         VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="110,0,0,10"> -->
+        <!-- </Button> -->
+        <StackPanel Height="36" Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
+            <Button Name="Upload" Visibility="Visible" Width="75" Height="23" Content="Upload"
+                    Margin="10,0,10,0" Click="Upload_OnClick" Background="#FFF" />
+            <Button Name="StyleSettings" Visibility="Visible" Width="75" Height="23" Content="Style"
+                    Margin="10,0,10,0" Click="StyleSettings_OnClick" Background="#FFF" />
+                      <!-- IsChecked="{Binding !isRewriteComments, Mode=TwoWay}" -->
+            <CheckBox Name="RewriteCheckBox" Click="RewriteCheckBox_OnClick"
+                      IsChecked="True"
+                      Height="16" Width="16" Background="#FFF"
+                      Margin="15,0,0,0">
+                <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
+            </CheckBox>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Label Content="Rewrite Comments" Margin="0,0,0,2" />
             </StackPanel>
-        </ScrollViewer>
+        </StackPanel>
+        <!-- <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"> -->
+        <!--     <StackPanel> -->
+        <!--         ~1~ <Image Name="imageMain" Stretch="Uniform" /> @1@ -->
+        <!--     </StackPanel> -->
+        <!-- </ScrollViewer> -->
     </Grid>
 </Window>
