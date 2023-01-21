@@ -23,16 +23,6 @@
                     Margin="10,0,10,0" Click="Upload_OnClick" Background="#FFF" />
             <Button Name="StyleSettings" Visibility="Visible" Width="75" Height="23" Content="Style"
                     Margin="10,0,10,0" Click="StyleSettings_OnClick" Background="#FFF" />
-                      <!-- IsChecked="{Binding !isRewriteComments, Mode=TwoWay}" -->
-            <CheckBox Name="RewriteCheckBox" Click="RewriteCheckBox_OnClick"
-                      IsChecked="True"
-                      Height="16" Width="16" Background="#FFF"
-                      Margin="15,0,0,0">
-                <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
-            </CheckBox>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Label Content="Rewrite Comments" Margin="0,0,0,2" />
-            </StackPanel>
         </StackPanel>
         <!-- <ScrollViewer VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible"> -->
         <!--     <StackPanel> -->
