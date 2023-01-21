@@ -4,7 +4,9 @@ using System.Windows;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Win32;
+
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using Run = DocumentFormat.OpenXml.Wordprocessing.Run;
 
 namespace AnalysisOfTextFiles
 {
@@ -49,25 +51,16 @@ namespace AnalysisOfTextFiles
           // WordProcessingCommentsPart part; if not, add a new one.
           if (myDocument.MainDocumentPart.GetPartsCountOfType<WordprocessingCommentsPart>() > 0)
           {
-            // if (IsRewriteComments)
-            // {
-              // myDocument.MainDocumentPart.WordprocessingCommentsPart.Comments = new Comments();
-            // }
-            // else
-            // {
-              comments = myDocument.MainDocumentPart.WordprocessingCommentsPart.Comments;
-
-              if (comments.HasChildren)
-              {
-                // Obtain an unused ID.
-                id = Int32.Parse(comments.Descendants<Comment>().Select(e => e.Id.Value).Max()) + 1;
-              }
+            comments =
+              myDocument.MainDocumentPart.WordprocessingCommentsPart.Comments;
+            if (comments.HasChildren)
+            {
+              // Obtain an unused ID.
+              id = Int32.Parse(comments.Descendants<Comment>().Select(e => e.Id.Value).Max()) + 1;
             }
-          // }
+          }
           else
           {
-            // if (IsRewriteComments) myDocument.MainDocumentPart.DeletePart(myDocument.MainDocumentPart.WordprocessingCommentsPart);
-
             // No WordprocessingCommentsPart part exists, so add one to the package.
             WordprocessingCommentsPart commentPart =
               myDocument.MainDocumentPart.AddNewPart<WordprocessingCommentsPart>();
@@ -76,27 +69,24 @@ namespace AnalysisOfTextFiles
           }
 
           // Compose a new Comment and add it to the Comments part.
-          Paragraph par =
-            new Paragraph(
-              new Run(new Text(pPr.GetFirstChild<ParagraphStyleId>().Val)));
-          Comment cmt = new Comment()
-          {
-            Id = id.ToString(),
-            Author = "Wrong style",
-            Date = DateTime.Now.ToLocalTime(),
-          };
+          Paragraph par = new Paragraph(new Run(new Text(pPr.GetFirstChild<ParagraphStyleId>().Val)));
+          Comment cmt =
+            new Comment()
+            {
+              Id = id.ToString(),
+              Author = "Wrong style",
+              Date = DateTime.Now.ToLocalTime(),
+            };
           cmt.AppendChild(par);
           comments.AppendChild(cmt);
           comments.Save();
 
           // Specify the text range for the Comment.
           // Insert the new CommentRangeStart before the first run of paragraph.
-          para.InsertBefore(new CommentRangeStart() { Id = id.ToString() },
-            para.GetFirstChild<Run>());
+          para.InsertBefore(new CommentRangeStart() { Id = id.ToString() }, para.GetFirstChild<Run>());
 
           // Insert the new CommentRangeEnd after last run of paragraph.
-          var cmtEnd = para.InsertAfter(new CommentRangeEnd() { Id = id.ToString() },
-            para.Elements<Run>().Last());
+          var cmtEnd = para.InsertAfter(new CommentRangeEnd() { Id = id.ToString() }, para.Elements<Run>().Last());
 
           // Compose a run with CommentReference and insert it.
           para.InsertAfter(new Run(new CommentReference() { Id = id.ToString() }), cmtEnd);
