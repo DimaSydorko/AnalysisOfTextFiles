@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows;
+using System.Xml;
+using System.Xml.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Win32;
@@ -20,10 +23,11 @@ namespace AnalysisOfTextFiles
     {
       InitializeComponent();
     }
+
     private void Upload_OnClick(object sender, RoutedEventArgs e)
     {
-      string[] allowedStyles = {"Heading1", "Heading2", "Heading3"};
-    
+      string[] allowedStyles = { "Heading1", "Heading2", "Heading3" };
+
       string fileName;
       OpenFileDialog openFileDialog = new OpenFileDialog();
       openFileDialog.Filter = "*.doc|*.docx";
@@ -42,6 +46,10 @@ namespace AnalysisOfTextFiles
 
       Body body = document.MainDocumentPart.Document.Body;
 
+      // Assign a reference to the appropriate part to the stylesPart variable.
+      Styles stylesXml = document.MainDocumentPart.StyleDefinitionsPart.Styles;
+      WStyle[] docStyles = Analis.ExtractStyles(stylesXml);
+
       // MyDocuments.Body is a WordProcessDocument.MainDocumentPart.Document.Body
       foreach (Paragraph para in body.Elements<Paragraph>())
       {
@@ -50,8 +58,10 @@ namespace AnalysisOfTextFiles
         if (pPr == null || pPr.GetFirstChild<ParagraphStyleId>() == null) continue;
 
         // if the value of the pStyle is allowed => skip the paragraph
-        string pStyle = pPr.GetFirstChild<ParagraphStyleId>().Val.ToString();
-        if (allowedStyles.Contains(pStyle) || pStyle.Substring(0, 3) == "ЕОМ") continue;
+        string pStyle = pPr.GetFirstChild<ParagraphStyleId>().Val;
+
+        // var style = docStyles.SingleOrDefault(s => { return s.decoded == pStyle; });
+        if (allowedStyles.Contains(pStyle) || pStyle.Substring(0, 3) == "EOM") continue;
 
         // MessageBox.Show($"{pStyle.Substring(0, 3)}_{pStyle.Substring(0, 3).Equals("ЕОМ")}");
 
@@ -109,5 +119,74 @@ namespace AnalysisOfTextFiles
     {
       MessageBox.Show("StyleSettings_OnClick");
     }
+  }
+}
+
+class WStyle
+{
+  public string decoded { get; set; }
+  public string encoded { get; set; }
+
+  public void SetDec(string dec)
+  {
+    decoded = dec;
+  }
+
+  public void SetEnc(string enc)
+  {
+    encoded = enc;
+  }
+}
+
+class Analis
+{
+  public static WStyle[] ExtractStyles(Styles stylesXml)
+  {
+    WStyle[] styles = new WStyle[2];
+    // WStyle[] styles = Array.Empty<WStyle>();
+
+    //Map to get Encoded and Decoded StyleNames
+    foreach (var styleXml in stylesXml.ChildElements)
+    {
+      if (styleXml.ChildElements.Count >= 3)
+      {
+        var styleDec = styleXml.ChildElements[0];
+        var styleEnc = styleXml.ChildElements[2];
+
+        WStyle style = new WStyle();
+
+        //Get Decoded Name
+        PropertyInfo propertyDec = styleDec.GetType().GetProperty("Val");
+        if (propertyDec != null)
+        {
+          var styleNameObjDec = propertyDec.GetValue(styleDec);
+          PropertyInfo propertyDecName = styleNameObjDec.GetType().GetProperty("Value");
+          string decName = propertyDecName.GetValue(styleNameObjDec).ToString();
+
+          style.SetDec(decName);
+        }
+
+        //Get Encoded Name
+        PropertyInfo propertyEnc = styleEnc.GetType().GetProperty("Val");
+        if (propertyEnc != null)
+        {
+          var styleNameObjEnc = propertyEnc.GetValue(styleEnc);
+          if (styleNameObjEnc != null)
+          {
+            PropertyInfo propertyEncName = styleNameObjEnc.GetType().GetProperty("Value");
+            string decName = propertyEncName.GetValue(styleNameObjEnc).ToString();
+
+            style.SetEnc(decName);
+          }
+        }
+
+        if (style.decoded != null)
+        {
+          styles.Append(style);
+        }
+      }
+    }
+          //TODO Fix Save elements to array
+    return styles;
   }
 }
