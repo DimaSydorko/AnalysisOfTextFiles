@@ -1,15 +1,49 @@
 ﻿using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles.Objects;
 
 class Analis
 {
+  public static bool IsValidStyle(WStyle style)
+  {                                           
+    string[] allowedStyles = { "Heading1", "Heading2", "Heading3" };
+
+    string first4Letters = style.decoded.Substring(0, 4);
+    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
+  }
+
+  public static void ParagraphCheck(Paragraph paragraph, MainDocumentPart mainPart,  List<WStyle> docStyles)
+  {
+    bool isParaExist = paragraph.ParagraphProperties != null;
+    bool isInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
+        
+    if (isParaExist || isInnerText)
+    {
+      if (isParaExist)
+      {
+        string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val;
+        WStyle style = WStyle.GetStyleFromEncoded(docStyles, styleName);
+
+        // if the value of the pStyle is allowed => skip the paragraph
+        if (!IsValidStyle(style))
+        {
+          WComment.Add(mainPart, paragraph, style.decoded);
+        }
+      }
+      else if (isInnerText)
+      {
+        WComment.Add(mainPart, paragraph, "Normal");
+      }
+    }
+  }
+  
   public static List<WStyle> ExtractStyles(Styles stylesXml)
   {
     List<WStyle> styles = new List<WStyle>();
-    // WStyle[] styles = Array.Empty<WStyle>();
 
     //Map to get Encoded and Decoded StyleNames
     foreach (var styleXml in stylesXml.ChildElements)
@@ -32,13 +66,14 @@ class Analis
           //Remove " Char" from styleName 
           if (decName.Length > 5)
           {
-            string last5Letter = decName.Substring(decName.Length - 5, 5);
-            if (last5Letter == " Char")
-            {
-              string withoutLast5Letter = decName.Substring(0, decName.Length - 5);
-              style.SetDec(withoutLast5Letter);
-            }
-            else style.SetDec(decName);
+            // string last5Letter = decName.Substring(decName.Length - 5, 5);
+            // if (last5Letter == " Char")
+            // {
+            //   string withoutLast5Letter = decName.Substring(0, decName.Length - 5);
+            //   style.SetDec(withoutLast5Letter);
+            // }
+            // else 
+            style.SetDec(decName);
           }
           else style.SetDec(decName);
         }

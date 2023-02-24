@@ -7,16 +7,16 @@ namespace AnalysisOfTextFiles.Objects;
 
 public class WComment
 {
-  public static void Add(MainDocumentPart mainDocumentPart, Paragraph paragraph, string message){
+  public static void Add(MainDocumentPart mainPart, Paragraph paragraph, string message){
     int id = 0;
     Comments comments;
     
     // Verify that the document contains a
     // WordProcessingCommentsPart part; if not, add a new one.
-    if (mainDocumentPart.GetPartsCountOfType<WordprocessingCommentsPart>() > 0)
+    if (mainPart.GetPartsCountOfType<WordprocessingCommentsPart>() > 0)
     {
       comments =
-        mainDocumentPart.WordprocessingCommentsPart.Comments;
+        mainPart.WordprocessingCommentsPart.Comments;
       if (comments.HasChildren)
       {
         // Obtain an unused ID.
@@ -27,7 +27,7 @@ public class WComment
     {
       // No WordprocessingCommentsPart part exists, so add one to the package.
       WordprocessingCommentsPart commentPart =
-        mainDocumentPart.AddNewPart<WordprocessingCommentsPart>();
+        mainPart.AddNewPart<WordprocessingCommentsPart>();
       commentPart.Comments = new Comments();
       comments = commentPart.Comments;
     }

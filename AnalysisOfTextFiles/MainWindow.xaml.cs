@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
@@ -8,10 +7,7 @@ using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 
 namespace AnalysisOfTextFiles
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-  public partial class MainWindow : Window
+  public partial class MainWindow
   {
     public MainWindow()
     {
@@ -20,8 +16,6 @@ namespace AnalysisOfTextFiles
 
     private void Upload_OnClick(object sender, RoutedEventArgs e)
     {
-      string[] allowedStyles = { "Heading1", "Heading2", "Heading3" };
-
       WFileName fileName = new WFileName();
       fileName.Open();
       //Open and clone file                                                                       
@@ -29,34 +23,31 @@ namespace AnalysisOfTextFiles
       using WordprocessingDocument document = (WordprocessingDocument)sourceWordDocument.Clone(fileName.analized, true);
 
       // Assign a reference to the appropriate part to the stylesPart variable.
-      Styles stylesXml = document.MainDocumentPart.StyleDefinitionsPart.Styles;
+      MainDocumentPart mainPart = document.MainDocumentPart;
+      Styles stylesXml = mainPart.StyleDefinitionsPart.Styles;
+
       List<WStyle> docStyles = Analis.ExtractStyles(stylesXml);
-      
-      Body body = document.MainDocumentPart.Document.Body;
-      foreach (Paragraph para in body.Elements<Paragraph>())
+
+
+      Body body = mainPart.Document.Body;
+      //--------paragraph-------- 
+      foreach (Paragraph paragraph in body.Elements<Paragraph>())
       {
-        ParagraphProperties pPr = para.GetFirstChild<ParagraphProperties>();
+        Analis.ParagraphCheck(paragraph, mainPart, docStyles);
+      }
 
-        if (pPr == null || pPr.GetFirstChild<ParagraphStyleId>() == null) continue;
-        
-        if (pPr == null || pPr.GetFirstChild<ParagraphStyleId>() == null)
-        {    
-          if (!string.IsNullOrEmpty(para.InnerText))
-          {       
-            WComment.Add(document.MainDocumentPart, para, "Normal");
-          }                 
-        }
-        else
+      //--------tables-------- 
+      IEnumerable<Table> tables = body.Descendants<Table>();
+      foreach (Table table in tables)
+      {
+        IEnumerable<TableCell> cells = table.Descendants<TableCell>();
+        foreach (TableCell cell in cells)
         {
-          string pStyleEncoded = pPr.GetFirstChild<ParagraphStyleId>().Val;
-
-          WStyle style = docStyles.SingleOrDefault(s => { return s.encoded == pStyleEncoded; });
-          string first4Letters = style.decoded.Substring(0, 4);
-
-          // if the value of the pStyle is allowed => skip the paragraph
-          if (allowedStyles.Contains(pStyleEncoded) || first4Letters == "ЕОМ:") continue;
-
-          WComment.Add(document.MainDocumentPart, para, style.decoded);
+          IEnumerable<Paragraph> paragraphs = cell.Descendants<Paragraph>();
+          foreach (Paragraph paragraph in paragraphs)
+          {
+            Analis.ParagraphCheck(paragraph,mainPart, docStyles);
+          }
         }
       }
 
