@@ -49,7 +49,7 @@ public class WComment
     paragraph.InsertBefore(new CommentRangeStart() { Id = id.ToString() }, paragraph.GetFirstChild<Run>());
 
     // Insert the new CommentRangeEnd after last run of paragraph.
-    CommentRangeEnd cmtEnd = paragraph.InsertAfter(new CommentRangeEnd() { Id = id.ToString() }, paragraph.Elements<Run>().Last());
+    CommentRangeEnd cmtEnd = paragraph.InsertAfter(new CommentRangeEnd() { Id = id.ToString() }, paragraph.Elements<Run>().LastOrDefault());
 
     // Compose a run with CommentReference and insert it.
     paragraph.InsertAfter(new Run(new CommentReference() { Id = id.ToString() }), cmtEnd);

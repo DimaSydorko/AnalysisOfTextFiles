@@ -46,10 +46,21 @@ namespace AnalysisOfTextFiles
           IEnumerable<Paragraph> paragraphs = cell.Descendants<Paragraph>();
           foreach (Paragraph paragraph in paragraphs)
           {
-            Analis.ParagraphCheck(paragraph,mainPart, docStyles);
+            Analis.ParagraphCheck(paragraph, mainPart, docStyles);
           }
         }
       }
+      
+      //--------header-------- 
+      // foreach (HeaderPart headerPart in mainPart.HeaderParts)
+      // {
+      //   Header headers = headerPart.Header;
+      //   IEnumerable<Paragraph> paragraphs = headers.Descendants<Paragraph>();
+      //   foreach (var paragraph in paragraphs)
+      //   {
+      //     Analis.ParagraphCheck(paragraph, mainPart, docStyles);
+      //   }
+      // }
 
       MessageBox.Show($"File {fileName.withoutExtension} analysed", "Complete Status");
     }

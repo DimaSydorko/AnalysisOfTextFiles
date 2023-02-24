@@ -9,7 +9,7 @@ namespace AnalysisOfTextFiles.Objects;
 class Analis
 {
   public static bool IsValidStyle(WStyle style)
-  {                                           
+  {
     string[] allowedStyles = { "Heading1", "Heading2", "Heading3" };
 
     string first4Letters = style.decoded.Substring(0, 4);
@@ -20,16 +20,17 @@ class Analis
   {
     bool isParaExist = paragraph.ParagraphProperties != null;
     bool isInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
-        
+    
     if (isParaExist || isInnerText)
     {
-      if (isParaExist)
+      var styleId = paragraph.ParagraphProperties.ParagraphStyleId;
+      if (isParaExist && styleId != null)
       {
-        string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val;
+        string styleName = styleId.Val;
         WStyle style = WStyle.GetStyleFromEncoded(docStyles, styleName);
 
         // if the value of the pStyle is allowed => skip the paragraph
-        if (!IsValidStyle(style))
+        if (style != null && !IsValidStyle(style))
         {
           WComment.Add(mainPart, paragraph, style.decoded);
         }
@@ -92,7 +93,12 @@ class Analis
           }
         }
 
-        if (style.decoded != null)
+        bool isNotAllowedStyle = style.encoded != null && style.encoded != "CommentText";
+        
+        if (style.decoded != null && isNotAllowedStyle)
+        {
+          styles.Add(style);
+        } else if (style.decoded == "Normal" && isNotAllowedStyle)
         {
           styles.Add(style);
         }

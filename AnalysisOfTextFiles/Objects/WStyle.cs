@@ -23,9 +23,3 @@ public class WStyle
     return allStyles.SingleOrDefault(s => { return s.encoded == encoded; });
   }
 }
-// public class StyleIssue
-// {
-//   public string styleId { get; set; }
-//   public StyleName styleName { get; set; }
-//   public bool isUsed { get; set; }
-// }
