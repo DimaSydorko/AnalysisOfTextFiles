@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.IO;
 
 namespace AnalysisOfTextFiles.Objects;
 
 class Analis
 {
+  public enum ContentType
+  {
+    Header,
+    Paragraph,
+    Table
+  }
   public static bool IsValidStyle(WStyle style)
   {
     string[] allowedStyles = { "Heading1", "Heading2", "Heading3" };
@@ -16,32 +23,41 @@ class Analis
     return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, MainDocumentPart mainPart,  List<WStyle> docStyles)
+  public static void ParagraphCheck(Paragraph paragraph, MainDocumentPart mainPart, List<WStyle> docStyles,
+    string reportPath, int idx, ContentType type)
   {
+    string text = paragraph.InnerText;
     bool isParaExist = paragraph.ParagraphProperties != null;
-    bool isInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
-    
+    bool isInnerText = !string.IsNullOrEmpty(text);
+    bool isComment = type != ContentType.Header;
+
     if (isParaExist || isInnerText)
     {
-      var styleId = paragraph.ParagraphProperties.ParagraphStyleId;
-      if (isParaExist && styleId != null)
+      // string first 10 letter
+      string first10Letters = text.Length > 10 ? text.Substring(0, 10) + "..." : text;
+      if (isParaExist && paragraph.ParagraphProperties.ParagraphStyleId != null)
       {
+        var styleId = paragraph.ParagraphProperties.ParagraphStyleId;
+        string parId = paragraph.ParagraphProperties.GetHashCode().ToString();
+
         string styleName = styleId.Val;
         WStyle style = WStyle.GetStyleFromEncoded(docStyles, styleName);
 
         // if the value of the pStyle is allowed => skip the paragraph
         if (style != null && !IsValidStyle(style))
         {
-          WComment.Add(mainPart, paragraph, style.decoded);
+          if (isComment) WComment.Add(mainPart, paragraph, style.decoded);
+          File.AppendAllText(reportPath, $"{type} №{idx + 1} ('{first10Letters}') Style: {style.decoded}\n");
         }
       }
       else if (isInnerText)
       {
-        WComment.Add(mainPart, paragraph, "Normal");
+        if (isComment) WComment.Add(mainPart, paragraph, "Normal");
+        File.AppendAllText(reportPath, $"{type} №{idx + 1} ('{first10Letters}') Style: Normal\n");
       }
     }
   }
-  
+
   public static List<WStyle> ExtractStyles(Styles stylesXml)
   {
     List<WStyle> styles = new List<WStyle>();
@@ -94,11 +110,12 @@ class Analis
         }
 
         bool isNotAllowedStyle = style.encoded != null && style.encoded != "CommentText";
-        
+
         if (style.decoded != null && isNotAllowedStyle)
         {
           styles.Add(style);
-        } else if (style.decoded == "Normal" && isNotAllowedStyle)
+        }
+        else if (style.decoded == "Normal" && isNotAllowedStyle)
         {
           styles.Add(style);
         }

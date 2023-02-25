@@ -10,6 +10,7 @@ public class WFileName
   public string extension { get; set; }
   public string withoutExtension { get; set; }
   public string analized { get; set; }
+  public string report { get; set; }
 
   public void Open()
   {
@@ -23,6 +24,7 @@ public class WFileName
       extension = Path.GetExtension(full);
       withoutExtension = Path.GetFileNameWithoutExtension(full);
       analized = $"{directory}/{withoutExtension} ANALYSED{extension}";
+      report = $"{directory}/{withoutExtension} Report.txt";
     }
   }
 }
