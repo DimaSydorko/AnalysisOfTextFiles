@@ -4,9 +4,13 @@ using System.Windows;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 using System.IO;
 using System.Linq;
+using DocumentFormat.OpenXml;
+
+using Table = DocumentFormat.OpenXml.Wordprocessing.Table;
+using TableCell = DocumentFormat.OpenXml.Wordprocessing.TableCell;
+using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 
 namespace AnalysisOfTextFiles
 {
@@ -33,7 +37,7 @@ namespace AnalysisOfTextFiles
       Body body = mainPart.Document.Body;
 
       List<WStyle> docStyles = Analis.ExtractStyles(stylesXml);
-      
+
       //--------header-------- 
       foreach (HeaderPart headerPart in mainPart.HeaderParts)
       {
@@ -45,7 +49,19 @@ namespace AnalysisOfTextFiles
           Analis.ParagraphCheck(paragraph, mainPart, docStyles, fileName.report, idx, Analis.ContentType.Header);
         }
       }
-      
+
+      //--------footer-------- 
+      foreach (FooterPart footerPart in mainPart.FooterParts)
+      {
+        Footer footers = footerPart.Footer;
+        List<Paragraph> paragraphs = footers.Descendants<Paragraph>().ToList();
+        foreach (var paragraph in paragraphs)
+        {
+          int idx = paragraphs.IndexOf(paragraph);
+          Analis.ParagraphCheck(paragraph, mainPart, docStyles, fileName.report, idx, Analis.ContentType.Footer);
+        }
+      }
+
       //--------paragraph-------- 
       List<Paragraph> bodyParagraphs = body.Elements<Paragraph>().ToList();
       foreach (Paragraph paragraph in bodyParagraphs)
@@ -67,6 +83,17 @@ namespace AnalysisOfTextFiles
           {
             Analis.ParagraphCheck(paragraph, mainPart, docStyles, fileName.report, idx, Analis.ContentType.Table);
           }
+        }
+      }
+
+      //--------table of content-------- 
+      OpenXmlElement toc = body.Descendants().FirstOrDefault();
+      if (toc != null)
+      {
+        List<Paragraph> tocEls = toc.Descendants<Paragraph>().ToList();
+        foreach (Paragraph paragraph in tocEls)
+        {
+          Analis.ParagraphCheck(paragraph, mainPart, docStyles, fileName.report, 0, Analis.ContentType.TOC);
         }
       }
 
