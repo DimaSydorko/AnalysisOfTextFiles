@@ -18,42 +18,56 @@ class Analis
     Footer,
     TOC
   }
+  private static bool _IsСomments { get; set; } = true;
+  private static List<WStyle> _Styles { get; set; } = new List<WStyle>();
+  private static string _ReportPath { get; set; } = "";
+
+  public static void Set(bool isComments, List<WStyle> styles, string reportPath)
+  {
+    _IsСomments = isComments;
+    _Styles = styles;
+    _ReportPath = reportPath;
+  }
   public static bool IsValidStyle(WStyle style)
   {
     string first4Letters = style.decoded.Substring(0, 4);
     return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, MainDocumentPart mainPart, List<WStyle> docStyles,
-    string reportPath, int idx, ContentType type)
+  public static void ParagraphCheck(Paragraph paragraph, MainDocumentPart mainPart, int idx, ContentType type)
   {
     string text = paragraph.InnerText;
     bool isParaExist = paragraph.ParagraphProperties != null;
     bool isInnerText = !string.IsNullOrEmpty(text);
     bool isComment = type != ContentType.Header || type != ContentType.Footer;
-
+    
     void onComment (string styleName, string first10Letters)
     {
-      if (isComment) WComment.Add(mainPart, paragraph, styleName);
-      string typeTitle = type == ContentType.TOC ? "Table of content" : $"{type} №{idx + 1}";
-      File.AppendAllText(reportPath, $"{typeTitle} ('{first10Letters}') Style: {styleName}\n");
+      if (isComment && _IsСomments) WComment.Add(mainPart, paragraph, styleName);
+
+      string typeTitle = type == ContentType.TOC ? "Table of content Paragraph" : $"{type}";
+      File.AppendAllText(_ReportPath, $"{typeTitle} №{idx + 1} ('{first10Letters}') Style: {styleName}\n");
     }
 
-    if (isParaExist || isInnerText)
+    if (isInnerText)
     {
-      // string first 10 letter
-      string first10Letters = text.Length > 10 ? text.Substring(0, 10) + "..." : text;
+      // string first letters
+      string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
       if (isParaExist && paragraph.ParagraphProperties.ParagraphStyleId != null)
       {
         var styleId = paragraph.ParagraphProperties.ParagraphStyleId;
 
         string styleName = styleId.Val;
-        WStyle style = WStyle.GetStyleFromEncoded(docStyles, styleName);
-
+        WStyle style = WStyle.GetStyleFromEncoded(_Styles, styleName);
+        
         // if the value of the pStyle is allowed => skip the paragraph
-        if (style != null && !IsValidStyle(style)) onComment(style.decoded, first10Letters);
+        if (style != null)
+        {
+          if (!IsValidStyle(style)) onComment(style.decoded, firstLetters);
+        }
+        else onComment(styleName, firstLetters);
       }
-      else if (isInnerText)onComment("Normal", first10Letters);
+      else if (isInnerText)onComment("Normal", firstLetters);
     }
   }
 
