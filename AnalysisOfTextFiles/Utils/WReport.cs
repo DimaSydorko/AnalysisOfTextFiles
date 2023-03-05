@@ -1,16 +1,38 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-
 namespace AnalysisOfTextFiles.Objects;
 
-public class WComment
+using ContentType = Analis.ContentType;
+
+public class WReport
 {
-  public static void Add(MainDocumentPart mainPart, Paragraph paragraph, string message){
+  public static void CreateReportFile()
+  {
+    string timestamp = DateTime.Now.ToString("F");
+    File.WriteAllText(State.FilePath.report, $"-----------------Report ({timestamp})----------------\n");
+  }
+
+  public static void OnMessage(Paragraph paragraph, ContentType type, int idx, string styleName)
+  {
+    string text = paragraph.InnerText;
+    string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
+    
+    bool isComment = type != ContentType.Header || type != ContentType.Footer;
+    if (isComment && State.IsСomments) _AddComment(paragraph, styleName);
+
+    string typeTitle = type == ContentType.TOC ? "Table of content Paragraph" : $"{type}";
+    File.AppendAllText(State.FilePath.report, $"{typeTitle} №{idx + 1} ('{firstLetters}') Style: {styleName}\n");
+  }
+
+  private static void _AddComment(Paragraph paragraph, string message)
+  {
     int id = 0;
     Comments comments;
-    
+    MainDocumentPart mainPart = State.WDocument.MainDocumentPart;
+
     // Verify that the document contains a
     // WordProcessingCommentsPart part; if not, add a new one.
     if (mainPart.GetPartsCountOfType<WordprocessingCommentsPart>() > 0)
@@ -49,10 +71,10 @@ public class WComment
     paragraph.InsertBefore(new CommentRangeStart() { Id = id.ToString() }, paragraph.GetFirstChild<Run>());
 
     // Insert the new CommentRangeEnd after last run of paragraph.
-    CommentRangeEnd cmtEnd = paragraph.InsertAfter(new CommentRangeEnd() { Id = id.ToString() }, paragraph.Elements<Run>().LastOrDefault());
+    CommentRangeEnd cmtEnd = paragraph.InsertAfter(new CommentRangeEnd() { Id = id.ToString() },
+      paragraph.Elements<Run>().LastOrDefault());
 
     // Compose a run with CommentReference and insert it.
     paragraph.InsertAfter(new Run(new CommentReference() { Id = id.ToString() }), cmtEnd);
-}
-
+  }
 }

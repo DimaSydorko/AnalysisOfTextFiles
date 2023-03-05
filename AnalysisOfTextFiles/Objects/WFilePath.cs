@@ -3,7 +3,7 @@ using Microsoft.Win32;
 
 namespace AnalysisOfTextFiles.Objects;
 
-public class WFileName
+public class WFilePath
 {
   public string directory { get; set; }
   public string full { get; set; }
@@ -12,19 +12,24 @@ public class WFileName
   public string analized { get; set; }
   public string report { get; set; }
 
-  public void Open()
+  public static WFilePath Open()
   {
+    WFilePath path = new WFilePath();
+    
     OpenFileDialog openFileDialog = new OpenFileDialog();
     openFileDialog.Filter = "*.doc|*.docx";
     openFileDialog.InitialDirectory = @"c:\temp\";
+    
     if (openFileDialog.ShowDialog() == true)
     {
-      full = openFileDialog.FileName;
-      directory = Path.GetDirectoryName(full);
-      extension = Path.GetExtension(full);
-      withoutExtension = Path.GetFileNameWithoutExtension(full);
-      analized = $"{directory}/{withoutExtension} ANALYSED{extension}";
-      report = $"{directory}/{withoutExtension} Report.txt";
+      path.full = openFileDialog.FileName;
+      path.directory = Path.GetDirectoryName(path.full);
+      path.extension = Path.GetExtension(path.full);
+      path.withoutExtension = Path.GetFileNameWithoutExtension(path.full);
+      path.analized = $"{path.directory}/{path.withoutExtension} ANALYSED{path.extension}";
+      path.report = $"{path.directory}/{path.withoutExtension} Report.txt";
     }
+
+    return path;
   }
 }
