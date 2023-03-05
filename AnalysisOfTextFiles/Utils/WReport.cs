@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+
 namespace AnalysisOfTextFiles.Objects;
 
 using ContentType = Analis.ContentType;
@@ -15,16 +16,26 @@ public class WReport
     File.WriteAllText(State.FilePath.report, $"-----------------Report ({timestamp})----------------\n");
   }
 
-  public static void OnMessage(Paragraph paragraph, ContentType type, int idx, string styleName)
+  public static void OnMessage(Paragraph paragraph, ContentType type, int idx, string styleName, WTable? table = null)
   {
     string text = paragraph.InnerText;
     string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
-    
-    bool isComment = type != ContentType.Header || type != ContentType.Footer;
-    if (isComment && State.IsСomments) _AddComment(paragraph, styleName);
 
-    string typeTitle = type == ContentType.TOC ? "Table of content Paragraph" : $"{type}";
-    File.AppendAllText(State.FilePath.report, $"{typeTitle} №{idx + 1} ('{firstLetters}') Style: {styleName}\n");
+    bool isComment = type != ContentType.Header || type != ContentType.Footer;
+    if (isComment && State.IsСomments)
+    {
+      _AddComment(paragraph, styleName);
+    }
+
+    string parData = $" ('{firstLetters}') Style: {styleName}\n";
+    string report = $"{type} {idx + 1} {parData}";
+
+    if (type == ContentType.TOC) report = $"Table of content Paragraph {idx + 1} {parData}";
+    else if (table != null)
+      report =
+        $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
+    
+    File.AppendAllText(State.FilePath.report, report);
   }
 
   private static void _AddComment(Paragraph paragraph, string message)

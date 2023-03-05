@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles.Objects;
@@ -20,14 +21,14 @@ public class Analis
     return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type)
+  public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)
   {
     bool isParaExist = paragraph.ParagraphProperties != null;
     bool isInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
     
     void onComment (string styleName)
     {
-      WReport.OnMessage(paragraph, type, idx, styleName);
+      WReport.OnMessage(paragraph, type, idx, styleName, table);
     }
 
     if (isInnerText)
