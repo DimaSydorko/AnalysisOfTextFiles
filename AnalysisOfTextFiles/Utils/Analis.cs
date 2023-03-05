@@ -33,7 +33,6 @@ public class Analis
 
     if (isInnerText)
     {
-      // string first letters
       if (isParaExist && paragraph.ParagraphProperties.ParagraphStyleId != null)
       {
         string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val;

@@ -8,38 +8,19 @@ public class WParse
 {
   public static void Content()
   {
-    // Assign a reference to the appropriate part to the stylesPart variable.
-    MainDocumentPart mainPart = State.WDocument.MainDocumentPart;
-    Body body = mainPart.Document.Body;
-
     State.Styles = WStyles.GetDocStyles();
     WReport.CreateReportFile();
 
-    //--------header-------- 
-    foreach (HeaderPart headerPart in mainPart.HeaderParts.ToList())
-    {
-      Header headers = headerPart.Header;
-      List<Paragraph> paragraphs = headers.Descendants<Paragraph>().ToList();
-      foreach (var paragraph in paragraphs)
-      {
-        int idx = paragraphs.IndexOf(paragraph);
-        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Header);
-      }
-    }
-
-    //--------footer-------- 
-    foreach (FooterPart footerPart in mainPart.FooterParts.ToList())
-    {
-      Footer footers = footerPart.Footer;
-      List<Paragraph> paragraphs = footers.Descendants<Paragraph>().ToList();
-      foreach (var paragraph in paragraphs)
-      {
-        int idx = paragraphs.IndexOf(paragraph);
-        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Footer);
-      }
-    }
-
-    //--------File parsing-------- 
+    _Header();
+    _Footer();
+    _Body();
+    
+    State.WDocument.Close();
+  }
+  private static void _Body()
+  {
+    Body body = State.WDocument.MainDocumentPart.Document.Body;
+    
     List<Paragraph> descendants = body.Descendants<Paragraph>().ToList();
     foreach (Paragraph parDesc in descendants)
     {
@@ -75,7 +56,35 @@ public class WParse
         }
       }
     }
+  }
+  private static void _Header()
+  {
+    List<HeaderPart> headerParts = State.WDocument.MainDocumentPart.HeaderParts.ToList();
+
+    foreach (HeaderPart headerPart in headerParts)
+    {
+      Header headers = headerPart.Header;
+      List<Paragraph> paragraphs = headers.Descendants<Paragraph>().ToList();
+      foreach (var paragraph in paragraphs)
+      {
+        int idx = paragraphs.IndexOf(paragraph);
+        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Header);
+      }
+    }
+  }
+  private static void _Footer()
+  {
+    List<FooterPart> footerParts = State.WDocument.MainDocumentPart.FooterParts.ToList();
     
-    State.WDocument.Close();
+    foreach (FooterPart footerPart in footerParts)
+    {
+      Footer footers = footerPart.Footer;
+      List<Paragraph> paragraphs = footers.Descendants<Paragraph>().ToList();
+      foreach (var paragraph in paragraphs)
+      {
+        int idx = paragraphs.IndexOf(paragraph);
+        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Footer);
+      }
+    }
   }
 }
