@@ -4,6 +4,8 @@ using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
+using Toc = DocumentFormat.OpenXml.Wordprocessing.Table;
+
 public class WParse
 {
   public static void Content()
@@ -14,18 +16,19 @@ public class WParse
     _Header();
     _Footer();
     _Body();
-    
+
     State.WDocument.Close();
   }
+
   private static void _Body()
   {
     Body body = State.WDocument.MainDocumentPart.Document.Body;
-    
+
     List<Paragraph> descendants = body.Descendants<Paragraph>().ToList();
     foreach (Paragraph parDesc in descendants)
     {
       int idx = descendants.IndexOf(parDesc);
-      if (((string)parDesc.ParagraphProperties?.ParagraphStyleId?.Val)?.StartsWith("TOC") == true)
+      if (parDesc.Parent.LocalName == "sdtContent")
       {
         // This is a TOC entry
         Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.TOC);
@@ -43,9 +46,9 @@ public class WParse
           int cellIdx = row.Descendants<TableCell>().ToList().IndexOf(cell);
           int rowIdx = table.Descendants<TableRow>().ToList().IndexOf(row);
           int tableIdx = body.Descendants<Table>().ToList().IndexOf(table);
-          
+
           WTable Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
-          
+
           // This is a table row
           Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.Table, Wtable);
         }
@@ -57,6 +60,7 @@ public class WParse
       }
     }
   }
+
   private static void _Header()
   {
     List<HeaderPart> headerParts = State.WDocument.MainDocumentPart.HeaderParts.ToList();
@@ -72,10 +76,11 @@ public class WParse
       }
     }
   }
+
   private static void _Footer()
   {
     List<FooterPart> footerParts = State.WDocument.MainDocumentPart.FooterParts.ToList();
-    
+
     foreach (FooterPart footerPart in footerParts)
     {
       Footer footers = footerPart.Footer;

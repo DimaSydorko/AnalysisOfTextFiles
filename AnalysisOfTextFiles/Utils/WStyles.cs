@@ -62,11 +62,14 @@ public class WStyles
         //Save only styles which exist   
         bool isNotAllowedStyle = style.encoded != null && style.encoded != "CommentText";
 
-        if (style.decoded != null && isNotAllowedStyle) styles.Add(style);
-        else if (style.decoded == "Normal" && isNotAllowedStyle) styles.Add(style);
+        WStyle alreadyCreatedStyle = styles.FirstOrDefault(s => s.encoded == style.encoded);
+        bool isAlreadyCreated = alreadyCreatedStyle != null; 
+          
+        if (style.decoded != null && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
+        else if (style.decoded == "Normal" && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
       }
     }
-
+    
     return styles;
   }
 }

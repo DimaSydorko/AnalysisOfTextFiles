@@ -19,6 +19,8 @@ namespace AnalysisOfTextFiles
       State.FilePath = WFilePath.Open();
       State.IsСomments = IsСomments;
 
+      if (State.FilePath.full == null) return;
+
       WordprocessingDocument document = null;
       try
       {

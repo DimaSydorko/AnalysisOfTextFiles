@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 namespace AnalysisOfTextFiles.Objects;
 
@@ -18,8 +17,8 @@ public class WStyle
     encoded = enc;
   }
 
-  public static WStyle GetStyleFromEncoded(List<WStyle> allStyles, string encoded)
+  public static WStyle GetStyleFromEncoded(string encoded)
   {
-    return allStyles.SingleOrDefault(s => { return s.encoded == encoded; });
+    return State.Styles.SingleOrDefault(s => { return s.encoded == encoded; });
   }
 }

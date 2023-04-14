@@ -30,7 +30,8 @@ public class WReport
     string parData = $" ('{firstLetters}') Style: {styleName}\n";
     string report = $"{type} {idx + 1} {parData}";
 
-    if (type == ContentType.TOC) report = $"Table of content Paragraph {idx + 1} {parData}";
+    //TOC: Table of content
+    if (type == ContentType.TOC) report = $"TOC Paragraph {idx + 1} {parData}";
     else if (table != null)
       report =
         $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";

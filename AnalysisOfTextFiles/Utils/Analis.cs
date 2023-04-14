@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles.Objects;
@@ -36,7 +35,7 @@ public class Analis
       if (isParaExist && paragraph.ParagraphProperties.ParagraphStyleId != null)
       {
         string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val;
-        WStyle style = WStyle.GetStyleFromEncoded(State.Styles, styleName);
+        WStyle style = WStyle.GetStyleFromEncoded(styleName);
         
         // if the value of the pStyle is allowed => skip the paragraph
         if (style != null)
