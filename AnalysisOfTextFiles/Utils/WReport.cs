@@ -17,7 +17,8 @@ public class WReport
     File.WriteAllText(State.FilePath.report, $"-----------------Report ({timestamp})----------------\n");
   }
 
-  public static void OnMessage(Paragraph paragraph, ContentType type, int idx, string styleName, WTable? table = null)
+  public static void OnMessage(Paragraph paragraph, ContentType type, int idx, string styleName, bool isEdited,
+    WTable? table = null)
   {
     string text = paragraph.InnerText;
     string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
@@ -36,8 +37,10 @@ public class WReport
     else if (table != null)
       report =
         $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
-    
-    File.AppendAllText(State.FilePath.report, report);
+
+    string isEditedText = isEdited ? "Edited " : "";
+
+    File.AppendAllText(State.FilePath.report, $"{isEditedText}{report}");
   }
 
   private static void _AddComment(Paragraph paragraph, string message)
