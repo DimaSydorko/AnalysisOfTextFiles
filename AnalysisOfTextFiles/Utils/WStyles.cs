@@ -96,29 +96,53 @@ public class WStyles
             if (runProperties != null)
             {
               StyleProperties properties = new StyleProperties();
+              properties.name = wStyle.decoded;
 
               if (runProperties.FontSize != null)
-                properties.size = runProperties.FontSize.Val.Value;
+              {
+                string val = runProperties.FontSize.Val.Value;
+                int halfVal = int.Parse(val) / 2;
+                properties.size = $"{halfVal}";
+              }
 
               if (runProperties.Color != null)
                 properties.color = runProperties.Color.Val;
 
               if (runProperties.Position != null)
                 properties.position = runProperties.Position.Val;
-
+              else
+                properties.position = "center";
+              
               if (runProperties.Bold != null)
-                properties.bold = runProperties.Bold.Val;
+                properties.bold = "true";
+              else
+                properties.bold = "false";
+              
               if (runProperties.Italic != null)
-                properties.italic = runProperties.Italic.Val;
+                properties.italic = "true";
+              else
+                properties.italic = "false";
 
               if (runProperties.Underline != null)
-                properties.underline = runProperties.Underline.Val;
+                properties.underline = "true";
+              else
+                properties.underline = "false";
 
+              if (runProperties.Caps != null)
+                properties.capitalize = "true";
+              else
+                properties.capitalize = "false";
+              
+              if (runProperties.Spacing != null)
+                properties.lineSpacing = runProperties.Spacing.Val;
+              else
+                properties.lineSpacing = "1.5";
+              
               if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
                 properties.fontType = runProperties.RunFonts.Ascii.InnerText;
 
               // styles.FirstOrDefault(s => s.encoded == style.encoded)
-              var settings = stylesSettings.FirstOrDefault(s => s.name == wStyle.decoded);
+              var settings = stylesSettings.FirstOrDefault(s => s.name == properties.name);
 
               if (settings != null)
               {
