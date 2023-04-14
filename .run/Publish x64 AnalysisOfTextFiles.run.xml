@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish x64 AnalysisOfTextFiles" type="DotNetFolderPublish" factoryName="Publish to folder" singleton="false">
+    <riderPublish configuration="Release" include_native_libs_for_self_extract="true" platform="Any CPU" produce_single_file="true" runtime="win-x64" self_contained="true" target_folder="$PROJECT_DIR$/AnalysisOfTextFiles/bin/Release/net7.0-windows/win-x64/publish" target_framework="net7.0-windows" uuid_high="3668487028235847809" uuid_low="-9210000507311035783" />
+    <method v="2" />
+  </configuration>
+</component>

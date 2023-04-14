@@ -10,9 +10,10 @@ public class WParse
 {
   public static void Content()
   {
-    State.Styles = WStyles.GetDocStyles();
     WReport.CreateReportFile();
-
+    State.Styles = WStyles.GetDocStyles();
+    WStyles.Review();
+    
     _Header();
     _Footer();
     _Body();

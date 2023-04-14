@@ -17,7 +17,7 @@ public class Analis
   public static bool IsValidStyle(WStyle style)
   {
     string first4Letters = style.decoded.Substring(0, 4);
-    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
+    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:" || first4Letters == "EOM:";
   }
 
   public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)

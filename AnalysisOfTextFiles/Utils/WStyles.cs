@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Reflection;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace AnalysisOfTextFiles.Objects;
 
 public class WStyles
 {
-    public static List<WStyle> GetDocStyles()
+  public static List<WStyle> GetDocStyles()
   {
     List<WStyle> styles = new List<WStyle>();
     Styles stylesXml = State.WDocument.MainDocumentPart.StyleDefinitionsPart.Styles;
-    
+
     //Map to get Encoded and Decoded StyleNames
     foreach (var styleXml in stylesXml.ChildElements)
     {
@@ -23,7 +25,7 @@ public class WStyles
 
         WStyle style = new WStyle();
 
-        void GetName (PropertyInfo property, OpenXmlElement styleXml, bool isDec)
+        void GetName(PropertyInfo property, OpenXmlElement styleXml, bool isDec)
         {
           if (property != null)
           {
@@ -43,7 +45,7 @@ public class WStyles
             }
           }
         }
-        
+
         PropertyInfo propertyDec = styleDec.GetType().GetProperty("Val");
         GetName(propertyDec, styleDec, true);
 
@@ -63,13 +65,76 @@ public class WStyles
         bool isNotAllowedStyle = style.encoded != null && style.encoded != "CommentText";
 
         WStyle alreadyCreatedStyle = styles.FirstOrDefault(s => s.encoded == style.encoded);
-        bool isAlreadyCreated = alreadyCreatedStyle != null; 
-          
+        bool isAlreadyCreated = alreadyCreatedStyle != null;
+
         if (style.decoded != null && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
         else if (style.decoded == "Normal" && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
       }
     }
-    
+
     return styles;
+  }
+
+  public static void Review()
+  {
+    File.AppendAllText(State.FilePath.report, "________Styles Review________\n");
+
+    StyleDefinitionsPart? styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
+    List<StyleProperties> stylesSettings = StyleProperties.GetSettingsList();
+
+    if (styleDefinitionsPart != null)
+    {
+      Styles stylesCheck = styleDefinitionsPart.Styles;
+      foreach (Style style in stylesCheck.Elements<Style>())
+      {
+        WStyle wStyle = WStyle.GetStyleFromEncoded(style.StyleId);
+        if (wStyle != null)
+        {
+          if (style.StyleRunProperties != null && Analis.IsValidStyle(wStyle))
+          {
+            StyleRunProperties? runProperties = style.StyleRunProperties;
+            if (runProperties != null)
+            {
+              StyleProperties properties = new StyleProperties();
+
+              if (runProperties.FontSize != null)
+                properties.size = runProperties.FontSize.Val.Value;
+
+              if (runProperties.Color != null)
+                properties.color = runProperties.Color.Val;
+
+              if (runProperties.Position != null)
+                properties.position = runProperties.Position.Val;
+
+              if (runProperties.Bold != null)
+                properties.bold = runProperties.Bold.Val;
+              if (runProperties.Italic != null)
+                properties.italic = runProperties.Italic.Val;
+
+              if (runProperties.Underline != null)
+                properties.underline = runProperties.Underline.Val;
+
+              if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
+                properties.fontType = runProperties.RunFonts.Ascii.InnerText;
+
+              // styles.FirstOrDefault(s => s.encoded == style.encoded)
+              var settings = stylesSettings.FirstOrDefault(s => s.name == wStyle.decoded);
+
+              if (settings != null)
+              {
+                if (!Equals(settings, properties))
+                {
+                  string diff = WReport.OnCompareObjects(settings, properties);
+                  File.AppendAllText(State.FilePath.report, $"[{wStyle.decoded}]\n");
+                  File.AppendAllText(State.FilePath.report, diff);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    File.AppendAllText(State.FilePath.report, "________Content Review________\n");
   }
 }

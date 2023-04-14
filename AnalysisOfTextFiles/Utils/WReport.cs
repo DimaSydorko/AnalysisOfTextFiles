@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -88,5 +89,25 @@ public class WReport
 
     // Compose a run with CommentReference and insert it.
     paragraph.InsertAfter(new Run(new CommentReference() { Id = id.ToString() }), cmtEnd);
+  }
+
+  public static string OnCompareObjects(object obj1, object obj2)
+  {
+    Type type = obj1.GetType();
+    PropertyInfo[] properties = type.GetProperties();
+    string diff = "";
+
+    foreach (PropertyInfo property in properties)
+    {
+      object value1 = property.GetValue(obj1);
+      object value2 = property.GetValue(obj2);
+
+      if (!Equals(value1, value2))
+      {
+        diff += $"{property.Name}: {value1} -> {value2}\n";
+      }
+    }
+
+    return diff;
   }
 }
