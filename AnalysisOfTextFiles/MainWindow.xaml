@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Analysis Of Text Files" Height="75" Width="300" WindowStartupLocation="CenterScreen"
+        Title="Analysis Of Text Files" Height="75" Width="320" WindowStartupLocation="CenterScreen"
         Background="#ADD8FF">
     <Grid>
         <StackPanel Height="36" Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
@@ -17,6 +17,8 @@
                 <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
             </CheckBox>
             <Label Content="New file with comments" Margin="0,4.5,0,0" />
+            <Button Name="AdminEdit" Visibility="{Binding IsAdmin}" Width="23" Height="23" Content="S"
+                    Margin="10,0,10,0" Click="AdminModal_OnClick" Background="#FFF" />
         </StackPanel>
     </Grid>
 </Window>

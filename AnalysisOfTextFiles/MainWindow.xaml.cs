@@ -1,19 +1,23 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
 
 namespace AnalysisOfTextFiles
 {
-  public partial class MainWindow
+  public partial class MainWindow : INotifyPropertyChanged
   {
+    public event PropertyChangedEventHandler PropertyChanged;
+    private static bool IsСomments { get; set; } = true;
+    public Visibility IsAdmin { get; } = Visibility.Collapsed;
     public MainWindow()
     {
+      IsAdmin = AdminSettings.IsUserAdmin() ? Visibility.Visible : Visibility.Collapsed;
       InitializeComponent();
+      DataContext = this;
     }
-
-    private static bool IsСomments { get; set; } = true;
-
+    
     private void Upload_OnClick(object sender, RoutedEventArgs e)
     {
       State.FilePath = WFilePath.Open();
@@ -47,6 +51,15 @@ namespace AnalysisOfTextFiles
     private void RewriteCheckBox_OnClick(object sender, RoutedEventArgs e)
     {
       IsСomments = !IsСomments;
+    }
+
+    private void AdminModal_OnClick(object sender, RoutedEventArgs e)
+    {
+      EditorWindow modalWindow = new EditorWindow();
+
+      modalWindow.Owner = this;
+
+      modalWindow.ShowDialog();
     }
   }
 }
