@@ -17,7 +17,7 @@
                 <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
             </CheckBox>
             <Label Content="New file with comments" Margin="0,4.5,0,0" />
-            <Button Name="AdminEdit" Visibility="{Binding IsAdmin}" Width="23" Height="23" Content="S"
+            <Button Name="AdminEdit" Visibility="{Binding IsAdmin}" Width="23" Height="23" Content="🛠️"
                     Margin="10,0,10,0" Click="AdminModal_OnClick" Background="#FFF" />
         </StackPanel>
     </Grid>

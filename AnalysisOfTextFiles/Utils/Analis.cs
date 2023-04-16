@@ -17,12 +17,12 @@ public class Analis
   public static bool IsValidStyle(WStyle style)
   {
     string first4Letters = style.decoded.Substring(0, 4);
-    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:" || first4Letters == "EOM:";
+    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
   }
   public static bool IsEditedStyle(WStyle style)
   {
     string first4Letters = style.decoded.Substring(0, 4);
-    bool isEOM = first4Letters == "ЕОМ:" || first4Letters == "EOM:";
+    bool isEOM = first4Letters == "ЕОМ:";
     if (isEOM) return style.decoded.Contains("+");
     return false;
   }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
@@ -43,8 +44,15 @@ namespace AnalysisOfTextFiles
       {
         State.WDocument = document;
 
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        
         WParse.Content();
-        MessageBox.Show($"File {State.FilePath.withoutExtension} analysed", "Complete Status");
+        
+        stopwatch.Stop();
+        TimeSpan elapsedTime = stopwatch.Elapsed;
+        
+        MessageBox.Show($"File {State.FilePath.withoutExtension} analysed for {elapsedTime.TotalSeconds} s", "Complete Status");
       }
     }
 

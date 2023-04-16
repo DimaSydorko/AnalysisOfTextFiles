@@ -59,8 +59,6 @@ public class AdminSettings
 
   public static string EncodeDataToHash(string dataToEncode)
   {
-    // var plainTextBytes = Encoding.UTF8.GetBytes(dataToEncode);
-    // return Convert.ToBase64String(plainTextBytes);
     byte[] dataBytes = Encoding.UTF8.GetBytes(dataToEncode);
     using (SHA256 sha256 = SHA256.Create())
     {
