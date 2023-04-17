@@ -106,18 +106,20 @@ public class WStyles
               }
 
               if (runProperties.Color != null)
-                properties.color = runProperties.Color.Val;
+                properties.color = runProperties.Color?.Val ?? "000000";
+              else
+                properties.color = "000000";
 
               if (runProperties.Position != null)
                 properties.position = runProperties.Position.Val;
               else
                 properties.position = "center";
-              
+
               if (runProperties.Bold != null)
                 properties.bold = "true";
               else
                 properties.bold = "false";
-              
+
               if (runProperties.Italic != null)
                 properties.italic = "true";
               else
@@ -132,24 +134,49 @@ public class WStyles
                 properties.capitalize = "true";
               else
                 properties.capitalize = "false";
-              
-              if (runProperties.Spacing != null)
-                properties.lineSpacing = runProperties.Spacing.Val;
+
+              StyleParagraphProperties? paragraphProperties = style.StyleParagraphProperties;
+              if (paragraphProperties != null)
+              {
+                if (paragraphProperties?.SpacingBetweenLines != null)
+                {
+                  SpacingBetweenLines? spacing = paragraphProperties?.SpacingBetweenLines;
+                  if (spacing != null)
+                  {
+                    properties.lineSpacingAfter = spacing.After?.Value ?? "0";
+                    properties.lineSpacingBefore = spacing.After?.Value ?? "0";
+                    properties.lineSpacing = spacing.Line?.Value ?? "0";
+                  }
+                }
+
+                if (paragraphProperties?.TextAlignment != null)
+                {
+                  properties.position = paragraphProperties?.TextAlignment?.Val;
+                }
+              }
               else
+              {
+                properties.lineSpacingAfter = "0";
+                properties.lineSpacingBefore = "0";
                 properties.lineSpacing = "1.5";
-              
+              }
+
               if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
                 properties.fontType = runProperties.RunFonts.Ascii.InnerText;
 
-              // styles.FirstOrDefault(s => s.encoded == style.encoded)
               var settings = stylesSettings.FirstOrDefault(s => s.name == properties.name);
+
+              if (wStyle.decoded == "ЕОМ: Автор")
+              {
+                bool test = false;
+              }
 
               if (settings != null)
               {
                 if (!Equals(settings, properties))
                 {
                   string diff = WReport.OnCompareObjects(settings, properties);
-                  File.AppendAllText(State.FilePath.report, $"[{wStyle.decoded}]\n");
+                  File.AppendAllText(State.FilePath.report, $"\n[{wStyle.decoded}]\n");
                   File.AppendAllText(State.FilePath.report, diff);
                 }
               }
