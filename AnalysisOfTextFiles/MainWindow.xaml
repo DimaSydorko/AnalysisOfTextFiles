@@ -4,21 +4,36 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Analysis Of Text Files" Height="75" Width="320" WindowStartupLocation="CenterScreen"
+        Title="Analysis Of Text Files" Height="100" Width="300" WindowStartupLocation="CenterScreen"
         Background="#ADD8FF">
     <Grid>
-        <StackPanel Height="36" Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
-            <Button Name="Upload" Visibility="Visible" Width="75" Height="23" Content="Upload"
-                    Margin="10,0,10,0" Click="Upload_OnClick" Background="#FFF" />
-            <CheckBox Name="RewriteCheckBox" Click="RewriteCheckBox_OnClick"
-                      IsChecked="True"
-                      Height="16" Width="16" Background="#FFF"
-                      Margin="15,0,0,0">
-                <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
-            </CheckBox>
-            <Label Content="New file with comments" Margin="0,4.5,0,0" />
-            <Button Name="AdminEdit" Visibility="{Binding IsAdmin}" Width="23" Height="23" Content="🛠️"
-                    Margin="10,0,10,0" Click="AdminModal_OnClick" Background="#FFF" />
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
+                <Button Name="Upload" Visibility="Visible" Width="75" Height="23" Content="Upload"
+                        Margin="10,0,10,0" Click="Upload_OnClick" Background="#FFF" />
+                <CheckBox Name="RewriteCheckBox" Click="RewriteCheckBox_OnClick"
+                          IsChecked="True"
+                          Height="16" Width="16" Background="#FFF"
+                          Margin="15,0,0,0">
+                    <TextBlock VerticalAlignment="Center" Text="{Binding IsRewriteComments}" />
+                </CheckBox>
+                <Label Content="New file with comments" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
+                <Button Name="AdminAuth" Visibility="{Binding IsAdminAuthBtn}" Width="28" Height="23"
+                        Content="🔑"
+                        Margin="10,0,10,0" Click="AdminAuth_OnClick" Background="#FFF" />
+                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="28" Height="23" Content="🔐"
+                        Margin="10,0,10,0" Click="AdminChangePass_OnClick" Background="#FFF" />
+                <Button Name="AdminEdit" Visibility="{Binding IsAdminEditBtn}" Width="28" Height="23" Content="🛠️"
+                        Margin="10,0,10,0" Click="AdminEdit_OnClick" Background="#FFF" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Window>
