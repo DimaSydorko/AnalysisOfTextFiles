@@ -88,6 +88,8 @@ public class AdminSettings
     WindowsIdentity? identity = WindowsIdentity.GetCurrent();
     WindowsPrincipal? principal = new WindowsPrincipal(identity);
     bool isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
-    return !isAdmin;
+    
+    if (DevState.IsAdmin) return true;
+    return isAdmin;
   }
 }

@@ -168,9 +168,9 @@ public class WStyles
 
               if (settings != null)
               {
-                if (!Equals(settings, properties))
+                string diff = WReport.OnCompareObjects(settings, properties);
+                if (!string.IsNullOrEmpty(diff))
                 {
-                  string diff = WReport.OnCompareObjects(settings, properties);
                   File.AppendAllText(State.FilePath.report, $"\n[{wStyle.decoded}]\n");
                   File.AppendAllText(State.FilePath.report, diff);
                 }
