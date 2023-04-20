@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -89,7 +90,7 @@ public class AdminSettings
     WindowsPrincipal? principal = new WindowsPrincipal(identity);
     bool isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
     
-    if (DevState.IsAdmin) return true;
+    if (Debugger.IsAttached) return true;
     return isAdmin;
   }
 }
