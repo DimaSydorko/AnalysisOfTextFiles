@@ -10,7 +10,7 @@ public class AdminSettings
   private static string settingsFilePath = "styleSettings.ini";
   private static string hashFilePath = "hash.ini";
 
-  public static string GetStyleSettings()
+  public static string GetStyleData()
   {
     string iniData = null;
     string iniDataHash = null;
@@ -39,7 +39,20 @@ public class AdminSettings
     return iniData;
   }
 
-  public static void SetStyleSettings(string decData)
+  public static string GetStyleSettings(string settingsData)
+  {
+    int index = settingsData.IndexOf("\n");
+    string settings = settingsData.Substring(index + 1);
+    return settings;
+  }
+  public static string GetStyleKeyWord(string settingsData)
+  {
+    int index = settingsData.IndexOf('\n');
+    string keyWord = settingsData.Substring(0, index);
+    return keyWord;
+  }
+
+  public static void SetStyleSettings(string styleSettings, string keyWord)
   {
     if (!IsUserAdmin())
     {
@@ -47,6 +60,8 @@ public class AdminSettings
       return;
     }
 
+    string decData = $"{keyWord}\n{styleSettings}";
+    
     string? encData = EncodeDataToHash(decData);
     if (encData != null)
     {

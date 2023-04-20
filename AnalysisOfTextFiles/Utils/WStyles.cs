@@ -166,11 +166,6 @@ public class WStyles
 
               var settings = stylesSettings.FirstOrDefault(s => s.name == properties.name);
 
-              if (wStyle.decoded == "ЕОМ: Автор")
-              {
-                bool test = false;
-              }
-
               if (settings != null)
               {
                 if (!Equals(settings, properties))

@@ -21,13 +21,14 @@ public class StyleProperties
 
   private static string iniFilePath = "styleSettings.ini";
 
-
-
   public static List<StyleProperties> GetSettingsList()
   {
     List<StyleProperties> stylesSettings = new List<StyleProperties>();
 
-    string content = AdminSettings.GetStyleSettings();
+    string data = AdminSettings.GetStyleData();
+    string content = AdminSettings.GetStyleSettings(data);
+    State.KeyWord = AdminSettings.GetStyleKeyWord(data);
+
     string[] lines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
     if (lines.Length != 0)

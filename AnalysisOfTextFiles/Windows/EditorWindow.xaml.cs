@@ -6,13 +6,16 @@ public partial class EditorWindow
     public EditorWindow()
     {
         InitializeComponent();
-        txtIniData.Text = AdminSettings.GetStyleSettings();
+        string settingsData = AdminSettings.GetStyleData();
+        txtIniData.Text = AdminSettings.GetStyleSettings(settingsData);
+        keyWord.Text = AdminSettings.GetStyleKeyWord(settingsData);
     }
 
     private void BtnSave_Click(object sender, RoutedEventArgs e)
     {
         string text = txtIniData.Text;
-        AdminSettings.SetStyleSettings(text);
+        string keyWordText = keyWord.Text;
+        AdminSettings.SetStyleSettings(text, keyWordText);
 
         DialogResult = true;
         Close();

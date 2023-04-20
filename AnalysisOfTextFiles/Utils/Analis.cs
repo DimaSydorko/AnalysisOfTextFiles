@@ -16,14 +16,16 @@ public class Analis
   }
   public static bool IsValidStyle(WStyle style)
   {
-    string first4Letters = style.decoded.Substring(0, 4);
-    return allowedStyles.Contains(style.encoded) || first4Letters == "ЕОМ:";
+    int keyWordLength = State.KeyWord.Length;
+    string firstLetters = style.decoded.Substring(0, keyWordLength);
+    return allowedStyles.Contains(style.encoded) || firstLetters == State.KeyWord;
   }
   public static bool IsEditedStyle(WStyle style)
   {
-    string first4Letters = style.decoded.Substring(0, 4);
-    bool isEOM = first4Letters == "ЕОМ:";
-    if (isEOM) return style.decoded.Contains("+");
+    int keyWordLength = State.KeyWord.Length;
+    string firstLetters = style.decoded.Substring(0, keyWordLength);
+    if (firstLetters == State.KeyWord) 
+      return style.decoded.Contains("+");
     return false;
   }
   
