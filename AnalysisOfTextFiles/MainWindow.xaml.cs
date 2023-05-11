@@ -115,7 +115,7 @@ namespace AnalysisOfTextFiles
         stopwatch.Stop();
         TimeSpan elapsedTime = stopwatch.Elapsed;
 
-        string timeInfo = IsAdminEditBtn == Visibility.Visible ? $" for {elapsedTime.TotalSeconds} s" : "";
+        string timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
         MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
       }
     }

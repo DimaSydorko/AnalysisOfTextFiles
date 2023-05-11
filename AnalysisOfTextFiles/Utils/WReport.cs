@@ -22,8 +22,8 @@ public class WReport
   {
     string text = paragraph.InnerText;
     string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
-
-    bool isComment = type != ContentType.Header || type != ContentType.Footer;
+    
+    bool isComment = type != ContentType.Header && type != ContentType.Footer;
     if (isComment && State.IsСomments)
     {
       _AddComment(paragraph, styleName);
