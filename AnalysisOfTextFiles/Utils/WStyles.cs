@@ -15,12 +15,17 @@ public class WStyles
     List<WStyle> styles = new List<WStyle>();
     Styles stylesXml = State.WDocument.MainDocumentPart.StyleDefinitionsPart.Styles;
 
+    string data = AdminSettings.GetStyleData();
+    State.Content = AdminSettings.GetStyleSettings(data);
+    State.KeyWord = AdminSettings.GetStyleKeyWord(data);
+    
     //Map to get Encoded and Decoded StyleNames
     foreach (var styleXml in stylesXml.ChildElements)
     {
       if (styleXml.ChildElements.Count >= 3)
       {
         OpenXmlElement styleDec = styleXml.ChildElements[0];
+        OpenXmlElement styleEncPar = styleXml.ChildElements[1];
         OpenXmlElement styleEnc = styleXml.ChildElements[2];
 
         WStyle style = new WStyle();
@@ -51,7 +56,26 @@ public class WStyles
 
         PropertyInfo propertyEnc = styleEnc.GetType().GetProperty("Val");
         GetName(propertyEnc, styleEnc, false);
+        
+        if (style.encoded == null && style.decoded != null)
+        {
+          int keyWordLength = State.KeyWord.Length;
+          string firstLetters = style.decoded.Substring(0, keyWordLength);
 
+          if (firstLetters == State.KeyWord)
+          {
+            var att = styleXml?.GetAttributes();
+            if (att != null)
+            {
+              var styleIdAttr = att.FirstOrDefault(a => a.LocalName == "styleId");
+              if (styleIdAttr != null)
+              {
+                style.encoded = styleIdAttr.Value;
+              }
+            }
+          }
+        }
+        
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
         if (tocStyles.Contains(style.decoded))

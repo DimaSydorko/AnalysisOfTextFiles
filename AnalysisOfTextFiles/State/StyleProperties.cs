@@ -25,11 +25,7 @@ public class StyleProperties
   {
     List<StyleProperties> stylesSettings = new List<StyleProperties>();
 
-    string data = AdminSettings.GetStyleData();
-    string content = AdminSettings.GetStyleSettings(data);
-    State.KeyWord = AdminSettings.GetStyleKeyWord(data);
-
-    string[] lines = content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+    string[] lines = State.Content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
     if (lines.Length != 0)
     {
