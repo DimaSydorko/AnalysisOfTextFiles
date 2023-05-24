@@ -52,7 +52,7 @@ public class Analis
           if (!IsValidStyle(style)) onComment(style.decoded, false);
           else if (IsEditedStyle(style)) onComment(style.decoded, true);
         }
-        else onComment(styleName, false);
+        else onComment($"Undefined Style name '{styleName}'", false);
       }
       else if (isInnerText)onComment("Normal", false);
     }

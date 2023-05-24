@@ -18,14 +18,15 @@ public class WStyles
     string data = AdminSettings.GetStyleData();
     State.Content = AdminSettings.GetStyleSettings(data);
     State.KeyWord = AdminSettings.GetStyleKeyWord(data);
-    
+
+    OpenXmlElement list = stylesXml.ChildElements[1];
+
     //Map to get Encoded and Decoded StyleNames
     foreach (var styleXml in stylesXml.ChildElements)
     {
       if (styleXml.ChildElements.Count >= 3)
       {
         OpenXmlElement styleDec = styleXml.ChildElements[0];
-        OpenXmlElement styleEncPar = styleXml.ChildElements[1];
         OpenXmlElement styleEnc = styleXml.ChildElements[2];
 
         WStyle style = new WStyle();
@@ -75,7 +76,7 @@ public class WStyles
             }
           }
         }
-        
+
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
         if (tocStyles.Contains(style.decoded))
@@ -83,6 +84,18 @@ public class WStyles
           string newEncoded = style.decoded.Replace(" ", "");
           string Upper = newEncoded.Substring(0, 3).ToUpper() + newEncoded.Substring(3);
           style.encoded = Upper;
+        }
+        
+        //Rewrite Header style names
+        string header = "Heading";
+        if ((style.decoded?.Length ?? 0) >= header.Length)
+        {
+          string firstHLetters = style.decoded.Substring(0, header.Length);
+          if (firstHLetters == header)
+          {
+            string hLevel = style.decoded.Substring(header.Length + 1, 1);
+            style.encoded = $"{header}{hLevel}";
+          }
         }
 
         //Save only styles which exist   
