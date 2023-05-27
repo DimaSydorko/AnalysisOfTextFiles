@@ -1,9 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles
 {
@@ -92,11 +96,37 @@ namespace AnalysisOfTextFiles
       WordprocessingDocument document = null;
       try
       {
-        //Open and clone file                                                                       
-        using WordprocessingDocument sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
+        // Open and clone file
+        string copyPath = State.FilePath.converted;
+
+        // Create a copy of the original document
+        File.Copy(State.FilePath.full, copyPath, true);
+
+        // Open the copied document for modification
+        using WordprocessingDocument copiedDoc = WordprocessingDocument.Open(State.FilePath.converted, true);
+
+        // Access the SettingsPart of the copied document
+        var settingsPart = copiedDoc.MainDocumentPart.GetPartsOfType<DocumentSettingsPart>().FirstOrDefault();
+        if (settingsPart != null)
+        {
+          // Create or modify the Compatibility element
+          Compatibility compatibility = new Compatibility(
+            new CompatibilitySetting()
+            {
+              Name = new EnumValue<CompatSettingNameValues>(CompatSettingNameValues.CompatibilityMode),
+              Uri = new StringValue("http://schemas.microsoft.com/office/word"),
+              Val = new StringValue("Word2016")
+            }
+          );
+
+          // Replace the existing Compatibility element, if any
+          settingsPart.Settings.RemoveAllChildren<Compatibility>();
+          settingsPart.Settings.AppendChild(compatibility);
+        }
+
         document = IsСomments
-          ? (WordprocessingDocument)sourceWordDocument.Clone(State.FilePath.analized, true)
-          : sourceWordDocument;
+          ? (WordprocessingDocument)copiedDoc.Clone(State.FilePath.analized, true)
+          : copiedDoc;
       }
       catch (Exception ex)
       {

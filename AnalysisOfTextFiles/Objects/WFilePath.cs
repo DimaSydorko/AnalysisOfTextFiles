@@ -9,6 +9,7 @@ public class WFilePath
   public string full { get; set; }
   public string extension { get; set; }
   public string withoutExtension { get; set; }
+  public string converted { get; set; }
   public string analized { get; set; }
   public string report { get; set; }
 
@@ -18,6 +19,7 @@ public class WFilePath
     
     OpenFileDialog openFileDialog = new OpenFileDialog();
     openFileDialog.Filter = "*.doc|*.docx";
+    // openFileDialog.Filter = @"All Files|*.docx;*.doc;|Word File (.docx ,.doc)|*.docx;*.doc";
     openFileDialog.InitialDirectory = @"c:\temp\";
     
     if (openFileDialog.ShowDialog() == true)
@@ -26,7 +28,8 @@ public class WFilePath
       path.directory = Path.GetDirectoryName(path.full);
       path.extension = Path.GetExtension(path.full);
       path.withoutExtension = Path.GetFileNameWithoutExtension(path.full);
-      path.analized = $"{path.directory}/{path.withoutExtension} ANALYSED{path.extension}";
+      path.converted = $"{State.FilePath.directory}\\{State.FilePath.withoutExtension} CONVERTED.docx";
+      path.analized = $"{path.directory}/{path.withoutExtension} ANALYSED.docx";
       path.report = $"{path.directory}/{path.withoutExtension} Report.txt";
     }
 
