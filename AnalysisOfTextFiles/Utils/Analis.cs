@@ -17,8 +17,33 @@ public class Analis
   public static bool IsValidStyle(WStyle style)
   {
     int keyWordLength = State.KeyWord.Length;
-    string firstLetters = style.decoded.Substring(0, keyWordLength);
-    return allowedStyles.Contains(style.encoded) || firstLetters == State.KeyWord;
+    if (keyWordLength <= style.decoded.Length)
+    {
+      string firstLetters = style.decoded.Substring(0, keyWordLength);
+      return allowedStyles.Contains(style.encoded) || firstLetters == State.KeyWord;
+    }
+    return false;
+  }
+
+  public static string? GetOldDecStyle(string encoded)
+  {
+    Dictionary<string, string> entryTable = new Dictionary<string, string>
+    {
+      { "21", "TOC1" },
+      { "22", "TOC2" },
+      { "23", "TOC3" },
+      { "13", "Normal" },
+      { "1", "Heading1" },
+      { "2", "Heading2" },
+      { "3", "Heading3" }
+    };
+
+    if (entryTable.ContainsKey(encoded))
+    {
+      string entry = entryTable[encoded];
+      return entry;
+    }
+    return null;
   }
   public static bool IsEditedStyle(WStyle style)
   {
@@ -52,7 +77,15 @@ public class Analis
           if (!IsValidStyle(style)) onComment(style.decoded, false);
           else if (IsEditedStyle(style)) onComment(style.decoded, true);
         }
-        else onComment($"Undefined Style name '{styleName}'", false);
+        else
+        {
+          string? dec = GetOldDecStyle(styleName);
+          if (!allowedStyles.Contains(dec))
+          {
+            if (dec == null) onComment($"Undefined Style name '{styleName}'", false);
+            else onComment(dec, false);
+          } 
+        }
       }
       else if (isInnerText)onComment("Normal", false);
     }

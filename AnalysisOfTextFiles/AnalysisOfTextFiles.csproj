@@ -9,7 +9,6 @@
 
     <ItemGroup>
       <PackageReference Include="DocumentFormat.OpenXml" Version="2.19.0" />
-      <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
     </ItemGroup>
 
     <ItemGroup>

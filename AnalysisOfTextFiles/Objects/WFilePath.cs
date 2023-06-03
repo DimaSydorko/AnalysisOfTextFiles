@@ -9,7 +9,6 @@ public class WFilePath
   public string full { get; set; }
   public string extension { get; set; }
   public string withoutExtension { get; set; }
-  public string converted { get; set; }
   public string analized { get; set; }
   public string report { get; set; }
 
@@ -28,7 +27,6 @@ public class WFilePath
       path.directory = Path.GetDirectoryName(path.full);
       path.extension = Path.GetExtension(path.full);
       path.withoutExtension = Path.GetFileNameWithoutExtension(path.full);
-      path.converted = $"{State.FilePath.directory}\\{State.FilePath.withoutExtension} CONVERTED.docx";
       path.analized = $"{path.directory}/{path.withoutExtension} ANALYSED.docx";
       path.report = $"{path.directory}/{path.withoutExtension} Report.txt";
     }

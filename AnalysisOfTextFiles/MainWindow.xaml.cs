@@ -97,35 +97,47 @@ namespace AnalysisOfTextFiles
       try
       {
         // Open and clone file
-        string copyPath = State.FilePath.converted;
+        string copiedPath = $"{State.FilePath.directory}\\{State.FilePath.withoutExtension} CONVERTED.docx";;
 
         // Create a copy of the original document
-        File.Copy(State.FilePath.full, copyPath, true);
+        File.Copy(State.FilePath.full, copiedPath, true);
 
+        // Create instance of OpenSettings
+        OpenSettings openSettings = new OpenSettings();
+
+        // Add the MarkupCompatibilityProcessSettings
+        openSettings.MarkupCompatibilityProcessSettings =
+          new MarkupCompatibilityProcessSettings(
+            MarkupCompatibilityProcessMode.ProcessAllParts,
+            FileFormatVersions.Office2016);
+        
         // Open the copied document for modification
-        using WordprocessingDocument copiedDoc = WordprocessingDocument.Open(State.FilePath.converted, true);
-
+        using WordprocessingDocument copiedDoc = WordprocessingDocument.Open(copiedPath, true, openSettings);
+        
         // Access the SettingsPart of the copied document
-        var settingsPart = copiedDoc.MainDocumentPart.GetPartsOfType<DocumentSettingsPart>().FirstOrDefault();
+        DocumentSettingsPart? settingsPart = copiedDoc.MainDocumentPart.GetPartsOfType<DocumentSettingsPart>().FirstOrDefault();
         if (settingsPart != null)
         {
-          // Create or modify the Compatibility element
+          // Create the Compatibility element
           Compatibility compatibility = new Compatibility(
             new CompatibilitySetting()
             {
               Name = new EnumValue<CompatSettingNameValues>(CompatSettingNameValues.CompatibilityMode),
               Uri = new StringValue("http://schemas.microsoft.com/office/word"),
-              Val = new StringValue("Word2016")
-            }
-          );
+              Val = new StringValue("16")
+            });
 
-          // Replace the existing Compatibility element, if any
+          // Replace the existing Compatibility element or add it if it doesn't exist
           settingsPart.Settings.RemoveAllChildren<Compatibility>();
           settingsPart.Settings.AppendChild(compatibility);
-        }
 
+          // Save the changes
+          settingsPart.Settings.Save();
+        }
+        copiedDoc.Save();
+        
         document = IsСomments
-          ? (WordprocessingDocument)copiedDoc.Clone(State.FilePath.analized, true)
+          ? (WordprocessingDocument)copiedDoc.Clone(State.FilePath.analized, true, openSettings)
           : copiedDoc;
       }
       catch (Exception ex)
