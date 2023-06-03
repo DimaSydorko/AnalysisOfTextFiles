@@ -83,7 +83,10 @@ public class Analis
           if (!allowedStyles.Contains(dec))
           {
             if (dec == null) onComment($"Undefined Style name '{styleName}'", false);
-            else onComment(dec, false);
+            else
+            {
+              onComment(dec, false);
+            }
           } 
         }
       }

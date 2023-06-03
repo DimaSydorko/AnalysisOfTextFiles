@@ -1,13 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
-using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles
 {
@@ -96,49 +92,11 @@ namespace AnalysisOfTextFiles
       WordprocessingDocument document = null;
       try
       {
-        // Open and clone file
-        string copiedPath = $"{State.FilePath.directory}\\{State.FilePath.withoutExtension} CONVERTED.docx";;
-
-        // Create a copy of the original document
-        File.Copy(State.FilePath.full, copiedPath, true);
-
-        // Create instance of OpenSettings
-        OpenSettings openSettings = new OpenSettings();
-
-        // Add the MarkupCompatibilityProcessSettings
-        openSettings.MarkupCompatibilityProcessSettings =
-          new MarkupCompatibilityProcessSettings(
-            MarkupCompatibilityProcessMode.ProcessAllParts,
-            FileFormatVersions.Office2016);
-        
-        // Open the copied document for modification
-        using WordprocessingDocument copiedDoc = WordprocessingDocument.Open(copiedPath, true, openSettings);
-        
-        // Access the SettingsPart of the copied document
-        DocumentSettingsPart? settingsPart = copiedDoc.MainDocumentPart.GetPartsOfType<DocumentSettingsPart>().FirstOrDefault();
-        if (settingsPart != null)
-        {
-          // Create the Compatibility element
-          Compatibility compatibility = new Compatibility(
-            new CompatibilitySetting()
-            {
-              Name = new EnumValue<CompatSettingNameValues>(CompatSettingNameValues.CompatibilityMode),
-              Uri = new StringValue("http://schemas.microsoft.com/office/word"),
-              Val = new StringValue("16")
-            });
-
-          // Replace the existing Compatibility element or add it if it doesn't exist
-          settingsPart.Settings.RemoveAllChildren<Compatibility>();
-          settingsPart.Settings.AppendChild(compatibility);
-
-          // Save the changes
-          settingsPart.Settings.Save();
-        }
-        copiedDoc.Save();
-        
+        //Open and clone file                                                                       
+        using WordprocessingDocument sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
         document = IsСomments
-          ? (WordprocessingDocument)copiedDoc.Clone(State.FilePath.analized, true, openSettings)
-          : copiedDoc;
+          ? (WordprocessingDocument)sourceWordDocument.Clone(State.FilePath.analized, true)
+          : sourceWordDocument;
       }
       catch (Exception ex)
       {
