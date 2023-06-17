@@ -92,7 +92,6 @@ namespace AnalysisOfTextFiles
       WordprocessingDocument document = null;
       try
       {
-        //Open and clone file                                                                       
         using WordprocessingDocument sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
         document = IsСomments
           ? (WordprocessingDocument)sourceWordDocument.Clone(State.FilePath.analized, true)

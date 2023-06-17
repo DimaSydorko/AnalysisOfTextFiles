@@ -88,10 +88,10 @@ public class WStyles
         
         //Rewrite Header style names
         string header = "Heading";
-        if ((style.decoded?.Length ?? 0) >= header.Length)
+        if (!string.IsNullOrEmpty(style.decoded) && style.decoded.Length >= header.Length)
         {
           string firstHLetters = style.decoded.Substring(0, header.Length);
-          if (firstHLetters == header)
+          if (firstHLetters == header && style.decoded.Length > header.Length + 1)
           {
             string hLevel = style.decoded.Substring(header.Length + 1, 1);
             style.encoded = $"{header}{hLevel}";
@@ -200,6 +200,10 @@ public class WStyles
 
               if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
                 properties.fontType = runProperties.RunFonts.Ascii.InnerText;
+              else
+              {
+                properties.fontType = "Times New Roman";
+              }
 
               var settings = stylesSettings.FirstOrDefault(s => s.name == properties.name);
 
