@@ -3,61 +3,61 @@ using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace AnalysisOfTextFiles;
+
 public partial class AdminChangePassWindow
 {
-    public AdminChangePassWindow()
+  public AdminChangePassWindow()
+  {
+    InitializeComponent();
+  }
+
+  private void BtnSubmit_Click(object sender, RoutedEventArgs e)
+  {
+    var password = txtPassword.Password;
+    var repeatPass = repeatPassword.Password;
+
+    if (!Equals(password, repeatPass))
     {
-        InitializeComponent();
+      MessageBox.Show("Passwords didn't match!");
+      return;
     }
 
-    private void BtnSubmit_Click(object sender, RoutedEventArgs e)
+    if (!ValidateCredentials(password))
     {
-        string password = txtPassword.Password;
-        string repeatPass = repeatPassword.Password;
-
-        if (!Equals(password, repeatPass))
-        {
-            MessageBox.Show("Passwords didn't match!");
-            return;
-        }
-        else if (!ValidateCredentials(password))
-        {
-            MessageBox.Show("Password should contain at least 1 special character, 1 numeric character, 1 uppercase letter");
-            return;
-        }
-        else
-        {
-            HashAndSavePassword(password);
-            MessageBox.Show("Password updated successful!");
-            Close();
-        }
+      MessageBox.Show("Password should contain at least 1 special character, 1 numeric character, 1 uppercase letter");
+      return;
     }
 
-    private void BtnClose_Click(object sender, RoutedEventArgs e)
-    {
-        Close();
-    }
-    
-    private bool ValidateCredentials(string password)
-    {
-        if (password.Length < 8)
-            return false;
-        
-        if (!Regex.IsMatch(password, @"[!@#$%^&*(),.?""':{}|<>]"))
-            return false;
+    HashAndSavePassword(password);
+    MessageBox.Show("Password updated successful!");
+    Close();
+  }
 
-        if (!Regex.IsMatch(password, @"\d"))
-            return false;
+  private void BtnClose_Click(object sender, RoutedEventArgs e)
+  {
+    Close();
+  }
 
-        if (!Regex.IsMatch(password, @"[A-Z]"))
-            return false;
+  private bool ValidateCredentials(string password)
+  {
+    if (password.Length < 8)
+      return false;
 
-        return true;
-    }
-    
-    public static void HashAndSavePassword(string password)
-    {
-        string encodedPass = AdminSettings.EncodeDataToHash(password);
-        File.WriteAllText("sec.ini", encodedPass);
-    }
+    if (!Regex.IsMatch(password, @"[!@#$%^&*(),.?""':{}|<>]"))
+      return false;
+
+    if (!Regex.IsMatch(password, @"\d"))
+      return false;
+
+    if (!Regex.IsMatch(password, @"[A-Z]"))
+      return false;
+
+    return true;
+  }
+
+  public static void HashAndSavePassword(string password)
+  {
+    var encodedPass = AdminSettings.EncodeDataToHash(password);
+    File.WriteAllText("sec.ini", encodedPass);
+  }
 }

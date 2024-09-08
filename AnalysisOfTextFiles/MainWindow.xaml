@@ -29,7 +29,8 @@
                 <Button Name="AdminAuth" Visibility="{Binding IsAdminAuthBtn}" Width="28" Height="23"
                         Content="🔑"
                         Margin="10,0,10,0" Click="AdminAuth_OnClick" Background="#FFF" />
-                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="28" Height="23" Content="🔐"
+                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="28" Height="23"
+                        Content="🔐"
                         Margin="10,0,10,0" Click="AdminChangePass_OnClick" Background="#FFF" />
                 <Button Name="AdminEdit" Visibility="{Binding IsAdminEditBtn}" Width="28" Height="23" Content="🛠️"
                         Margin="10,0,10,0" Click="AdminEdit_OnClick" Background="#FFF" />

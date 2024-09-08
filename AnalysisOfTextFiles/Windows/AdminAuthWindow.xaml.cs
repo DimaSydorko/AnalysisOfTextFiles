@@ -2,23 +2,23 @@
 using System.IO;
 using System.Windows;
 
-
 namespace AnalysisOfTextFiles;
 
 public partial class AdminAuthWindow
 {
+  public delegate void VisibilityChangedEventHandler(bool visibility);
+
   public AdminAuthWindow()
   {
     InitializeComponent();
   }
-  
-  public delegate void VisibilityChangedEventHandler(bool visibility);
+
   public event VisibilityChangedEventHandler IsAdminEditBtn, IsAdminChangePassBtn, IsAdminAuthBtn;
-  
+
   private void BtnLogin_Click(object sender, RoutedEventArgs e)
   {
-    string password = txtPassword.Password;
-    bool isVerify = VerifyPassword(password);
+    var password = txtPassword.Password;
+    var isVerify = VerifyPassword(password);
 
     if (isVerify)
     {
@@ -27,7 +27,7 @@ public partial class AdminAuthWindow
       IsAdminAuthBtn?.Invoke(false);
       IsAdminEditBtn?.Invoke(true);
       IsAdminChangePassBtn?.Invoke(true);
-      
+
       MessageBox.Show("Login successful!");
       Close();
     }
@@ -53,7 +53,7 @@ public partial class AdminAuthWindow
     {
     }
 
-    string encodedPass = AdminSettings.EncodeDataToHash(password);
+    var encodedPass = AdminSettings.EncodeDataToHash(password);
 
     if (!string.IsNullOrEmpty(storedPass))
     {

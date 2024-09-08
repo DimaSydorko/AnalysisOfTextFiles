@@ -14,13 +14,13 @@ public class WFilePath
 
   public static WFilePath Open()
   {
-    WFilePath path = new WFilePath();
-    
-    OpenFileDialog openFileDialog = new OpenFileDialog();
+    var path = new WFilePath();
+
+    var openFileDialog = new OpenFileDialog();
     openFileDialog.Filter = "*.doc|*.docx";
     // openFileDialog.Filter = @"All Files|*.docx;*.doc;|Word File (.docx ,.doc)|*.docx;*.doc";
     openFileDialog.InitialDirectory = @"c:\temp\";
-    
+
     if (openFileDialog.ShowDialog() == true)
     {
       path.full = openFileDialog.FileName;

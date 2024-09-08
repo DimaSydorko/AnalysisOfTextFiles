@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using AnalysisOfTextFiles.Objects;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Paragraph = DocumentFormat.OpenXml.Wordprocessing.Paragraph;
 using Toc = DocumentFormat.OpenXml.Wordprocessing.Table;
 
 public class WParse
@@ -13,7 +10,7 @@ public class WParse
     WReport.CreateReportFile();
     State.Styles = WStyles.GetDocStyles();
     WStyles.Review();
-    
+
     _Header();
     _Footer();
     _Body();
@@ -23,12 +20,12 @@ public class WParse
 
   private static void _Body()
   {
-    Body body = State.WDocument.MainDocumentPart.Document.Body;
+    var body = State.WDocument.MainDocumentPart.Document.Body;
 
-    List<Paragraph> descendants = body.Descendants<Paragraph>().ToList();
-    foreach (Paragraph parDesc in descendants)
+    var descendants = body.Descendants<Paragraph>().ToList();
+    foreach (var parDesc in descendants)
     {
-      int idx = descendants.IndexOf(parDesc);
+      var idx = descendants.IndexOf(parDesc);
       if (parDesc.Parent.LocalName == "sdtContent")
       {
         // This is a TOC entry
@@ -39,16 +36,16 @@ public class WParse
         // Check if the paragraph is part of a table
         if (parDesc.Parent != null && parDesc.Parent is TableCell)
         {
-          TableCell cell = (TableCell)parDesc.Parent;
-          TableRow row = (TableRow)parDesc.Parent.Parent;
-          Table table = (Table)parDesc.Parent.Parent.Parent;
+          var cell = (TableCell)parDesc.Parent;
+          var row = (TableRow)parDesc.Parent.Parent;
+          var table = (Table)parDesc.Parent.Parent.Parent;
 
-          int parIdx = cell.Descendants<Paragraph>().ToList().IndexOf(parDesc);
-          int cellIdx = row.Descendants<TableCell>().ToList().IndexOf(cell);
-          int rowIdx = table.Descendants<TableRow>().ToList().IndexOf(row);
-          int tableIdx = body.Descendants<Table>().ToList().IndexOf(table);
+          var parIdx = cell.Descendants<Paragraph>().ToList().IndexOf(parDesc);
+          var cellIdx = row.Descendants<TableCell>().ToList().IndexOf(cell);
+          var rowIdx = table.Descendants<TableRow>().ToList().IndexOf(row);
+          var tableIdx = body.Descendants<Table>().ToList().IndexOf(table);
 
-          WTable Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
+          var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
 
           // This is a table row
           Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.Table, Wtable);
@@ -64,15 +61,15 @@ public class WParse
 
   private static void _Header()
   {
-    List<HeaderPart> headerParts = State.WDocument.MainDocumentPart.HeaderParts.ToList();
+    var headerParts = State.WDocument.MainDocumentPart.HeaderParts.ToList();
 
-    foreach (HeaderPart headerPart in headerParts)
+    foreach (var headerPart in headerParts)
     {
-      Header headers = headerPart.Header;
-      List<Paragraph> paragraphs = headers.Descendants<Paragraph>().ToList();
+      var headers = headerPart.Header;
+      var paragraphs = headers.Descendants<Paragraph>().ToList();
       foreach (var paragraph in paragraphs)
       {
-        int idx = paragraphs.IndexOf(paragraph);
+        var idx = paragraphs.IndexOf(paragraph);
         Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Header);
       }
     }
@@ -80,15 +77,15 @@ public class WParse
 
   private static void _Footer()
   {
-    List<FooterPart> footerParts = State.WDocument.MainDocumentPart.FooterParts.ToList();
+    var footerParts = State.WDocument.MainDocumentPart.FooterParts.ToList();
 
-    foreach (FooterPart footerPart in footerParts)
+    foreach (var footerPart in footerParts)
     {
-      Footer footers = footerPart.Footer;
-      List<Paragraph> paragraphs = footers.Descendants<Paragraph>().ToList();
+      var footers = footerPart.Footer;
+      var paragraphs = footers.Descendants<Paragraph>().ToList();
       foreach (var paragraph in paragraphs)
       {
-        int idx = paragraphs.IndexOf(paragraph);
+        var idx = paragraphs.IndexOf(paragraph);
         Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Footer);
       }
     }

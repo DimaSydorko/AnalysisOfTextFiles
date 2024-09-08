@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+
 public class StyleProperties
 {
+  private static string iniFilePath = "styleSettings.ini";
   public string name { get; set; }
 
   public string size { get; set; }
@@ -18,20 +20,16 @@ public class StyleProperties
   public string underline { get; set; }
   public string capitalize { get; set; }
 
-
-  private static string iniFilePath = "styleSettings.ini";
-
   public static List<StyleProperties> GetSettingsList()
   {
-    List<StyleProperties> stylesSettings = new List<StyleProperties>();
+    var stylesSettings = new List<StyleProperties>();
 
-    string[] lines = State.Content.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+    var lines = State.Content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
     if (lines.Length != 0)
     {
       StyleProperties currentStyle = null;
-      foreach (string line in lines)
-      {
+      foreach (var line in lines)
         if (line.StartsWith("["))
         {
           // Start of a new section, create a new Style object
@@ -42,11 +40,11 @@ public class StyleProperties
         else if (currentStyle != null)
         {
           // Parse the key-value pairs and set the properties of the current Style object
-          string[] parts = line.Split('=');
+          var parts = line.Split('=');
           if (parts.Length == 2)
           {
-            string key = parts[0].Trim();
-            string value = parts[1].Trim();
+            var key = parts[0].Trim();
+            var value = parts[1].Trim();
 
             switch (key)
             {
@@ -86,7 +84,6 @@ public class StyleProperties
             }
           }
         }
-      }
     }
 
     return stylesSettings;

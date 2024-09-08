@@ -2,11 +2,6 @@
 
 public class WTable
 {
-  public int Idx { get; }
-  public int RowIdx { get; }
-  public int CellIdx { get; }
-  public int ParIdx { get; }
-
   public WTable(int idx, int rowIdx, int cellIdx, int parIdx)
   {
     Idx = idx;
@@ -14,4 +9,9 @@ public class WTable
     CellIdx = cellIdx;
     ParIdx = parIdx;
   }
+
+  public int Idx { get; }
+  public int RowIdx { get; }
+  public int CellIdx { get; }
+  public int ParIdx { get; }
 }

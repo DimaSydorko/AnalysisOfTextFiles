@@ -4,22 +4,23 @@
         Title="Admin Auth" Height="220" Width="400" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="Change Admin password" FontSize="18" Margin="10" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <TextBlock Text="Change Admin password" FontSize="18" Margin="10" Grid.Row="0" VerticalAlignment="Center"
+                   HorizontalAlignment="Center" />
         <Grid Grid.Row="1">
-            <TextBlock Text="Password:" Margin="10" VerticalAlignment="Center"/>
-            <PasswordBox x:Name="txtPassword" Margin="10" VerticalAlignment="Center" Width="200"/>
+            <TextBlock Text="Password:" Margin="10" VerticalAlignment="Center" />
+            <PasswordBox x:Name="txtPassword" Margin="10" VerticalAlignment="Center" Width="200" />
         </Grid>
         <Grid Grid.Row="2">
-            <TextBlock Text="Repeat:" Margin="10" VerticalAlignment="Center"/>
-            <PasswordBox x:Name="repeatPassword" Margin="10" VerticalAlignment="Center" Width="200"/>
+            <TextBlock Text="Repeat:" Margin="10" VerticalAlignment="Center" />
+            <PasswordBox x:Name="repeatPassword" Margin="10" VerticalAlignment="Center" Width="200" />
         </Grid>
-        <Button Content="Change password" Margin="10 0" Grid.Row="3" Click="BtnSubmit_Click"/>
-        <Button Content="Cancel" Margin="10" Grid.Row="4" Click="BtnClose_Click"/>
+        <Button Content="Change password" Margin="10 0" Grid.Row="3" Click="BtnSubmit_Click" />
+        <Button Content="Cancel" Margin="10" Grid.Row="4" Click="BtnClose_Click" />
     </Grid>
 </Window>

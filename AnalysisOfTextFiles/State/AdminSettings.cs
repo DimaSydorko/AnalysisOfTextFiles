@@ -8,8 +8,8 @@ using System.Windows;
 
 public class AdminSettings
 {
-  private static string settingsFilePath = "styleSettings.ini";
-  private static string hashFilePath = "hash.ini";
+  private static readonly string settingsFilePath = "styleSettings.ini";
+  private static readonly string hashFilePath = "hash.ini";
 
   public static string GetStyleData()
   {
@@ -27,29 +27,30 @@ public class AdminSettings
       return "";
     }
 
-    bool isDataDamaged = !string.Equals(iniDataHash, EncodeDataToHash(iniData));
+    var isDataDamaged = !string.Equals(iniDataHash, EncodeDataToHash(iniData));
 
     if (isDataDamaged)
     {
       MessageBox.Show("Settings file was damaged", "Error");
 
-      bool isAdmin = IsUserAdmin();
+      var isAdmin = IsUserAdmin();
       if (isAdmin) return "";
     }
-    
+
     return iniData;
   }
 
   public static string GetStyleSettings(string settingsData)
   {
-    int index = settingsData.IndexOf("\n");
-    string settings = settingsData.Substring(index + 1);
+    var index = settingsData.IndexOf("\n");
+    var settings = settingsData.Substring(index + 1);
     return settings;
   }
+
   public static string GetStyleKeyWord(string settingsData)
   {
-    int index = settingsData.IndexOf('\n');
-    string keyWord = settingsData.Substring(0, index);
+    var index = settingsData.IndexOf('\n');
+    var keyWord = settingsData.Substring(0, index);
     return keyWord;
   }
 
@@ -61,9 +62,9 @@ public class AdminSettings
       return;
     }
 
-    string decData = $"{keyWord}\n{styleSettings}";
-    
-    string? encData = EncodeDataToHash(decData);
+    var decData = $"{keyWord}\n{styleSettings}";
+
+    var encData = EncodeDataToHash(decData);
     if (encData != null)
     {
       File.WriteAllText(settingsFilePath, decData);
@@ -75,21 +76,21 @@ public class AdminSettings
 
   public static string EncodeDataToHash(string dataToEncode)
   {
-    byte[] dataBytes = Encoding.UTF8.GetBytes(dataToEncode);
-    using (SHA256 sha256 = SHA256.Create())
+    var dataBytes = Encoding.UTF8.GetBytes(dataToEncode);
+    using (var sha256 = SHA256.Create())
     {
-      byte[] hashBytes = sha256.ComputeHash(dataBytes);
-      string hashedData = Convert.ToBase64String(hashBytes);
+      var hashBytes = sha256.ComputeHash(dataBytes);
+      var hashedData = Convert.ToBase64String(hashBytes);
       return hashedData;
     }
   }
 
   public static bool IsUserAdmin()
   {
-    WindowsIdentity? identity = WindowsIdentity.GetCurrent();
-    WindowsPrincipal? principal = new WindowsPrincipal(identity);
-    bool isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
-    
+    var identity = WindowsIdentity.GetCurrent();
+    var principal = new WindowsPrincipal(identity);
+    var isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+
     if (Debugger.IsAttached) return true;
     return isAdmin;
   }
