@@ -8,10 +8,21 @@ namespace AnalysisOfTextFiles.Objects;
 
 public class WReport
 {
+  public static void Write(string reportMessage, bool isRewrite = false)
+  {
+    if (isRewrite)
+    {
+      File.WriteAllText(State.FilePath.report, $"{reportMessage}\n");
+    }
+    else
+    {
+      File.AppendAllText(State.FilePath.report, $"{reportMessage}\n");
+    }
+  }
   public static void CreateReportFile()
   {
     var timestamp = DateTime.Now.ToString("F");
-    File.WriteAllText(State.FilePath.report, $"-----------------Report ({timestamp})----------------\n");
+    Write($"-----------------Report ({timestamp})----------------", true);
   }
 
   public static void OnMessage(Paragraph paragraph, Analis.ContentType type, int idx, string styleName, bool isEdited,
@@ -21,20 +32,28 @@ public class WReport
     var firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
 
     var isComment = type != Analis.ContentType.Header && type != Analis.ContentType.Footer;
-    if (isComment && State.IsСomments) _AddComment(paragraph, styleName);
+    if (isComment && State.IsСomments)
+    {
+      _AddComment(paragraph, styleName);
+    }
 
-    var parData = $" ('{firstLetters}') Style: {styleName}\n";
+    var parData = $" ('{firstLetters}') Style: {styleName}";
     var report = $"{type} {idx + 1} {parData}";
 
     //TOC: Table of content
-    if (type == Analis.ContentType.TOC) report = $"TOC Paragraph {idx + 1} {parData}";
+    if (type == Analis.ContentType.TOC)
+    {
+      report = $"TOC Paragraph {idx + 1} {parData}";
+    }
     else if (table != null)
+    {
       report =
         $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
+    }
 
     var isEditedText = isEdited ? "Edited " : "";
 
-    File.AppendAllText(State.FilePath.report, $"{isEditedText}{report}");
+    Write($"{isEditedText}{report}");
   }
 
   private static void _AddComment(Paragraph paragraph, string message)
@@ -50,8 +69,10 @@ public class WReport
       comments =
         mainPart.WordprocessingCommentsPart.Comments;
       if (comments.HasChildren)
+      {
         // Obtain an unused ID.
         id = int.Parse(comments.Descendants<Comment>().Select(e => e.Id.Value).Max()) + 1;
+      }
     }
     else
     {
@@ -86,7 +107,7 @@ public class WReport
     paragraph.InsertAfter(new Run(new CommentReference { Id = id.ToString() }), cmtEnd);
   }
 
-  public static string OnCompareObjects(object obj1, object obj2)
+  public static string OnCompareStyleSettings(object obj1, object obj2)
   {
     var type = obj1.GetType();
     var properties = type.GetProperties();
@@ -97,7 +118,10 @@ public class WReport
       var value1 = property.GetValue(obj1);
       var value2 = property.GetValue(obj2);
 
-      if (!Equals(value1, value2)) diff += $"{property.Name}: {value1} -> {value2}\n";
+      if (!Equals(value1, value2))
+      {
+        diff += $"{property.Name}: {value1} -> {value2}\n";
+      }
     }
 
     return diff;

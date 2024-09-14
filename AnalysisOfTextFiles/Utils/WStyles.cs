@@ -108,7 +108,7 @@ public class WStyles
 
   public static void Review()
   {
-    File.AppendAllText(State.FilePath.report, "________Styles Review________\n");
+    WReport.Write("________Styles Review________");
 
     var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
     var stylesSettings = StyleProperties.GetSettingsList();
@@ -198,11 +198,11 @@ public class WStyles
 
               if (settings != null)
               {
-                var diff = WReport.OnCompareObjects(settings, properties);
+                var diff = WReport.OnCompareStyleSettings(settings, properties);
                 if (!string.IsNullOrEmpty(diff))
                 {
-                  File.AppendAllText(State.FilePath.report, $"\n[{wStyle.decoded}]\n");
-                  File.AppendAllText(State.FilePath.report, diff);
+                  WReport.Write( $"\n[{wStyle.decoded}]");
+                  WReport.Write( diff);
                 }
               }
             }
@@ -210,6 +210,6 @@ public class WStyles
       }
     }
 
-    File.AppendAllText(State.FilePath.report, "________Content Review________\n");
+    WReport.Write( "________Content Review________");
   }
 }

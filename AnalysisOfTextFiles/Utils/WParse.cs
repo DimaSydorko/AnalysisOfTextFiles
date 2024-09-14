@@ -11,6 +11,7 @@ public class WParse
     State.Styles = WStyles.GetDocStyles();
     WStyles.Review();
 
+    _PageFormat();
     _Header();
     _Footer();
     _Body();
@@ -20,6 +21,8 @@ public class WParse
 
   private static void _Body()
   {
+    WReport.Write("----Boody----");
+
     var body = State.WDocument.MainDocumentPart.Document.Body;
 
     var descendants = body.Descendants<Paragraph>().ToList();
@@ -61,6 +64,8 @@ public class WParse
 
   private static void _Header()
   {
+    WReport.Write("----Header & Footer----");
+
     var headerParts = State.WDocument.MainDocumentPart.HeaderParts.ToList();
 
     foreach (var headerPart in headerParts)
@@ -88,6 +93,19 @@ public class WParse
         var idx = paragraphs.IndexOf(paragraph);
         Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Footer);
       }
+    }
+  }
+
+  private static void _PageFormat()
+  {
+    WReport.Write("----Page format----");
+
+    var body = State.WDocument.MainDocumentPart.Document.Body;
+
+    foreach (var section in body.Elements<SectionProperties>())
+    {
+      Analis.CheckDimensions(section);
+      Analis.CheckPageMargin(section);
     }
   }
 }
