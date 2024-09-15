@@ -25,8 +25,14 @@ public class WReport
     Write($"-----------------Report ({timestamp})----------------", true);
   }
 
-  public static void OnMessage(Paragraph paragraph, Analis.ContentType type, int idx, string styleName, bool isEdited,
-    WTable? table = null)
+  public static void OnMessage(
+    Paragraph paragraph, 
+    Analis.ContentType type, 
+    int idx, 
+    string styleName, 
+    bool isEdited, 
+    WTable? table = null,
+    string? customMessage = null)
   {
     var text = paragraph.InnerText;
     var firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
@@ -34,21 +40,20 @@ public class WReport
     var isComment = type != Analis.ContentType.Header && type != Analis.ContentType.Footer;
     if (isComment && State.IsСomments)
     {
-      _AddComment(paragraph, styleName);
+      _AddComment(paragraph, styleName, customMessage);
     }
 
-    var parData = $" ('{firstLetters}') Style: {styleName}";
+    var parData = customMessage ?? $" ('{firstLetters}') Style: {styleName}";
     var report = $"{type} {idx + 1} {parData}";
 
-    //TOC: Table of content
+    // Customize the report for Table of Contents
     if (type == Analis.ContentType.TOC)
     {
       report = $"TOC Paragraph {idx + 1} {parData}";
     }
     else if (table != null)
     {
-      report =
-        $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
+      report = $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
     }
 
     var isEditedText = isEdited ? "Edited " : "";
@@ -56,7 +61,7 @@ public class WReport
     Write($"{isEditedText}{report}");
   }
 
-  private static void _AddComment(Paragraph paragraph, string message)
+  private static void _AddComment(Paragraph paragraph, string message, string? customMessage = null)
   {
     var id = 0;
     Comments comments;
@@ -89,7 +94,7 @@ public class WReport
       new Comment
       {
         Id = id.ToString(),
-        Author = "Wrong style"
+        Author = customMessage ?? "Wrong style"
       };
     cmt.AppendChild(par);
     comments.AppendChild(cmt);

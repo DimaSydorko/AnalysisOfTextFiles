@@ -99,6 +99,10 @@ public class Analis
         onComment("Normal", false);
       }
     }
+    else
+    {
+      WReport.OnMessage(paragraph, type, idx, "", false, table, "Empty line");
+    }
   }
 
   public static void CheckDimensions(SectionProperties section)
