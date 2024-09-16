@@ -4,21 +4,24 @@ namespace AnalysisOfTextFiles.Objects;
 
 public class WStyle
 {
-  public string decoded { get; set; }
-  public string encoded { get; set; }
-
-  public void SetDec(string dec)
+  public string Decoded { get; set; }
+  public string Encoded { get; set; }
+  public void SetDec(string decoded)
   {
-    decoded = dec;
+    Decoded = decoded;
   }
 
-  public void SetEnc(string enc)
+  public void SetEnc(string encoded)
   {
-    encoded = enc;
+    Encoded = encoded;
   }
-
   public static WStyle GetStyleFromEncoded(string encoded)
   {
-    return State.Styles.SingleOrDefault(s => { return s.encoded == encoded; });
+    return State.Styles.SingleOrDefault(s => { return s.Encoded == encoded; });
+  }  
+  
+  public static string GetDecodedStyle(string encoded)
+  {
+    return State.Styles.Find(s => { return s.Encoded == encoded; })?.Decoded;
   }
 }

@@ -3,11 +3,26 @@ using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using System.Collections.Generic;
 
 namespace AnalysisOfTextFiles.Objects;
 
 public class WReport
 {
+  public enum TitleType
+  {
+    Empty,
+    Order,
+    Edited,
+    Wrong
+  }  
+  public enum OrderType
+  {
+    MissedAfter,
+    MissedBefore,
+    InsteadBefore,
+    InsteadAfter,
+  }
   public static void Write(string reportMessage, bool isRewrite = false)
   {
     if (isRewrite)
@@ -19,49 +34,75 @@ public class WReport
       File.AppendAllText(State.FilePath.report, $"{reportMessage}\n");
     }
   }
+
   public static void CreateReportFile()
   {
     var timestamp = DateTime.Now.ToString("F");
     Write($"-----------------Report ({timestamp})----------------", true);
   }
-
-  public static void OnMessage(
-    Paragraph paragraph, 
-    Analis.ContentType type, 
-    int idx, 
-    string styleName, 
-    bool isEdited, 
-    WTable? table = null,
-    string? customMessage = null)
+  
+  public static void Order(Paragraph paragraph, CheckParagraph.ContentType type, int idx, string styleName, List<string> order, OrderType orderType, string? wrongOrder = "",  WTable? table = null)
   {
-    var text = paragraph.InnerText;
-    var firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
-
-    var isComment = type != Analis.ContentType.Header && type != Analis.ContentType.Footer;
-    if (isComment && State.IsСomments)
+    string allowed = string.Join(", ", order.Select(e => $"'{e}'"));
+    string extraMessage = orderType switch
     {
-      _AddComment(paragraph, styleName, customMessage);
-    }
-
-    var parData = customMessage ?? $" ('{firstLetters}') Style: {styleName}";
-    var report = $"{type} {idx + 1} {parData}";
-
-    // Customize the report for Table of Contents
-    if (type == Analis.ContentType.TOC)
-    {
-      report = $"TOC Paragraph {idx + 1} {parData}";
-    }
-    else if (table != null)
-    {
-      report = $"Table {table.Idx + 1}, Row {table.RowIdx + 1}, Cell {table.CellIdx + 1}, Par {table.ParIdx + 1} {parData}";
-    }
-
-    var isEditedText = isEdited ? "Edited " : "";
-
-    Write($"{isEditedText}{report}");
+      OrderType.MissedAfter => $"mast be after {allowed}",
+      OrderType.MissedBefore => $"mast be before {allowed}",
+      OrderType.InsteadAfter => $"mast be after {allowed}, But now is '{wrongOrder}'",
+      OrderType.InsteadBefore => $"mast be before {allowed}, But now is '{wrongOrder}'",
+      _ => $"mast be after {allowed}"
+    };
+    
+    OnMessage(paragraph, type, idx, styleName, table, TitleType.Order, extraMessage);
   }
 
-  private static void _AddComment(Paragraph paragraph, string message, string? customMessage = null)
+  public static void OnMessage(
+    Paragraph paragraph,
+    CheckParagraph.ContentType type,
+    int idx,
+    string styleName,
+    WTable? table = null,
+    TitleType? title = TitleType.Wrong,
+    string? extraMessage = null)
+  {
+    string message = title switch
+    {
+      TitleType.Empty => "Empty Line",
+      TitleType.Wrong => $"Style: '{styleName}'",
+      TitleType.Order => $"Invalid order, style: '{styleName}' {extraMessage}",
+      TitleType.Edited => $"Edited style: '{styleName}'",
+      _ => $"Style: '{styleName}'"
+    };
+    
+    bool isComment = type != CheckParagraph.ContentType.Header && type != CheckParagraph.ContentType.Footer;
+    if (isComment && State.IsСomments)
+    {
+      _AddComment(paragraph, message, title);
+    }
+
+    if (title != TitleType.Empty)
+    {
+      string text = paragraph.InnerText;
+      string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
+
+      if (firstLetters.Length > 0)
+      {
+        message = $"('{firstLetters}') {message}";
+      }
+    }
+    
+    string report = type switch
+    {
+      CheckParagraph.ContentType.Paragraph => $"{type} {idx + 1} {message}",
+      CheckParagraph.ContentType.TOC => $"TOC Paragraph {idx + 1} {message}",
+      CheckParagraph.ContentType.Table => $"Table {table?.Idx + 1}, Row {table?.RowIdx + 1}, Cell {table?.CellIdx + 1}, Par {table?.ParIdx + 1} {message}",
+      _ => $"{type} {idx + 1} {message}"
+    };
+
+    Write(report);
+  }
+
+  private static void _AddComment(Paragraph paragraph, string message, TitleType? title = TitleType.Wrong)
   {
     var id = 0;
     Comments comments;
@@ -88,13 +129,22 @@ public class WReport
       comments = commentPart.Comments;
     }
 
+    string Author = title switch
+    {
+      TitleType.Empty => "Empty Line",
+      TitleType.Wrong => "Wrong style",
+      TitleType.Edited => "Edited style",
+      TitleType.Order => "Invalid Order",
+      _ => string.Empty
+    };
+    
     // Compose a new Comment and add it to the Comments part.
     var par = new Paragraph(new Run(new Text(message)));
     var cmt =
       new Comment
       {
         Id = id.ToString(),
-        Author = customMessage ?? "Wrong style"
+        Author = Author
       };
     cmt.AppendChild(par);
     comments.AppendChild(cmt);
@@ -112,20 +162,23 @@ public class WReport
     paragraph.InsertAfter(new Run(new CommentReference { Id = id.ToString() }), cmtEnd);
   }
 
-  public static string OnCompareStyleSettings(object obj1, object obj2)
+  public static string OnCompareStyleSettings(object settings, object value)
   {
-    var type = obj1.GetType();
+    var type = settings.GetType();
     var properties = type.GetProperties();
     var diff = "";
 
     foreach (var property in properties)
     {
-      var value1 = property.GetValue(obj1);
-      var value2 = property.GetValue(obj2);
-
-      if (!Equals(value1, value2))
+      if (property.Name != "after" && property.Name != "before")
       {
-        diff += $"{property.Name}: {value1} -> {value2}\n";
+        var value1 = property.GetValue(settings);
+        var value2 = property.GetValue(value);
+
+        if (!Equals(value1, value2))
+        {
+          diff += $"{property.Name}: {value1} -> {value2}\n";
+        }
       }
     }
 

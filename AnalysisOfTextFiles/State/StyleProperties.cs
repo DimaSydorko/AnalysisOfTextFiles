@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class StyleProperties
 {
@@ -19,6 +20,11 @@ public class StyleProperties
   public string italic { get; set; }
   public string underline { get; set; }
   public string capitalize { get; set; }
+  
+  public List<string> after { get; set; }
+  
+  public List<string> before { get; set; } 
+
 
   public static List<StyleProperties> GetSettingsList()
   {
@@ -26,6 +32,14 @@ public class StyleProperties
 
     var lines = State.Content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
+    List<string> getOrder (string value)
+    {
+     return value
+        .Split(',')
+        .Select(s => s.Trim().Trim('"'))
+        .ToList();
+    }
+    
     if (lines.Length != 0)
     {
       StyleProperties currentStyle = null;
@@ -80,6 +94,16 @@ public class StyleProperties
                 break;
               case "capitalize":
                 currentStyle.capitalize = value;
+                break;
+              case "before":
+                // var before = getOrder(value);
+                // before.Add(currentStyle.name);
+                currentStyle.before = getOrder(value);
+                break;
+              case "after":
+                // var after = getOrder(value);
+                // after.Add(currentStyle.name);
+                currentStyle.after = getOrder(value);
                 break;
             }
           }

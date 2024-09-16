@@ -29,36 +29,33 @@ public class WParse
     foreach (var parDesc in descendants)
     {
       var idx = descendants.IndexOf(parDesc);
-      if (parDesc.Parent.LocalName == "sdtContent")
+      State.NextParagraph = idx == (descendants.Count - 1) ? null : descendants[idx + 1];
+      State.PrevParagraph = idx == 0 ? null : descendants[idx - 1];
+
+      string prev = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(State.PrevParagraph));
+      string curr = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(parDesc));
+      string next = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(State.NextParagraph));
+
+      // Check if it's TOC
+      if (parDesc.Parent.LocalName == "sdtContent") CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.TOC);
+      else if (parDesc.Parent != null && parDesc.Parent is TableCell)
       {
-        // This is a TOC entry
-        Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.TOC);
+        var cell = (TableCell)parDesc.Parent;
+        var row = (TableRow)parDesc.Parent.Parent;
+        var table = (Table)parDesc.Parent.Parent.Parent;
+
+        var parIdx = cell.Descendants<Paragraph>().ToList().IndexOf(parDesc);
+        var cellIdx = row.Descendants<TableCell>().ToList().IndexOf(cell);
+        var rowIdx = table.Descendants<TableRow>().ToList().IndexOf(row);
+        var tableIdx = body.Descendants<Table>().ToList().IndexOf(table);
+
+        var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
+
+        // This is a table row
+        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Table, Wtable);
+        // This is an ordinary paragraph
       }
-      else
-      {
-        // Check if the paragraph is part of a table
-        if (parDesc.Parent != null && parDesc.Parent is TableCell)
-        {
-          var cell = (TableCell)parDesc.Parent;
-          var row = (TableRow)parDesc.Parent.Parent;
-          var table = (Table)parDesc.Parent.Parent.Parent;
-
-          var parIdx = cell.Descendants<Paragraph>().ToList().IndexOf(parDesc);
-          var cellIdx = row.Descendants<TableCell>().ToList().IndexOf(cell);
-          var rowIdx = table.Descendants<TableRow>().ToList().IndexOf(row);
-          var tableIdx = body.Descendants<Table>().ToList().IndexOf(table);
-
-          var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
-
-          // This is a table row
-          Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.Table, Wtable);
-        }
-        else
-        {
-          // This is an ordinary paragraph
-          Analis.ParagraphCheck(parDesc, idx, Analis.ContentType.Paragraph);
-        }
-      }
+      else CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Paragraph);
     }
   }
 
@@ -75,7 +72,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Header);
+        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Header);
       }
     }
   }
@@ -91,7 +88,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        Analis.ParagraphCheck(paragraph, idx, Analis.ContentType.Footer);
+        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Footer);
       }
     }
   }
@@ -104,8 +101,8 @@ public class WParse
 
     foreach (var section in body.Elements<SectionProperties>())
     {
-      Analis.CheckDimensions(section);
-      Analis.CheckPageMargin(section);
+      CheckPage.CheckDimensions(section);
+      CheckPage.CheckPageMargin(section);
     }
   }
 }

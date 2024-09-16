@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using DocumentFormat.OpenXml;
@@ -56,10 +55,10 @@ public class WStyles
         var propertyEnc = styleEnc.GetType().GetProperty("Val");
         GetName(propertyEnc, styleEnc, false);
 
-        if (style.encoded == null && style.decoded != null)
+        if (style.Encoded == null && style.Decoded != null)
         {
           var keyWordLength = State.KeyWord.Length;
-          var firstLetters = style.decoded.Substring(0, keyWordLength);
+          var firstLetters = style.Decoded.Substring(0, keyWordLength);
 
           if (firstLetters == State.KeyWord)
           {
@@ -67,40 +66,40 @@ public class WStyles
             if (att != null)
             {
               var styleIdAttr = att.FirstOrDefault(a => a.LocalName == "styleId");
-              if (styleIdAttr != null) style.encoded = styleIdAttr.Value;
+              if (styleIdAttr != null) style.Encoded = styleIdAttr.Value;
             }
           }
         }
 
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
-        if (tocStyles.Contains(style.decoded))
+        if (tocStyles.Contains(style.Decoded))
         {
-          var newEncoded = style.decoded.Replace(" ", "");
+          var newEncoded = style.Decoded.Replace(" ", "");
           var Upper = newEncoded.Substring(0, 3).ToUpper() + newEncoded.Substring(3);
-          style.encoded = Upper;
+          style.Encoded = Upper;
         }
 
         //Rewrite Header style names
         var header = "Heading";
-        if (!string.IsNullOrEmpty(style.decoded) && style.decoded.Length >= header.Length)
+        if (!string.IsNullOrEmpty(style.Decoded) && style.Decoded.Length >= header.Length)
         {
-          var firstHLetters = style.decoded.Substring(0, header.Length);
-          if (firstHLetters == header && style.decoded.Length > header.Length + 1)
+          var firstHLetters = style.Decoded.Substring(0, header.Length);
+          if (firstHLetters == header && style.Decoded.Length > header.Length + 1)
           {
-            var hLevel = style.decoded.Substring(header.Length + 1, 1);
-            style.encoded = $"{header}{hLevel}";
+            var hLevel = style.Decoded.Substring(header.Length + 1, 1);
+            style.Encoded = $"{header}{hLevel}";
           }
         }
 
         //Save only styles which exist   
-        var isNotAllowedStyle = style.encoded != null && style.encoded != "CommentText";
+        var isNotAllowedStyle = style.Encoded != null && style.Encoded != "CommentText";
 
-        var alreadyCreatedStyle = styles.FirstOrDefault(s => s.encoded == style.encoded);
+        var alreadyCreatedStyle = styles.FirstOrDefault(s => s.Encoded == style.Encoded);
         var isAlreadyCreated = alreadyCreatedStyle != null;
 
-        if (style.decoded != null && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
-        else if (style.decoded == "Normal" && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
+        if (style.Decoded != null && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
+        else if (style.Decoded == "Normal" && isNotAllowedStyle && !isAlreadyCreated) styles.Add(style);
       }
 
     return styles;
@@ -111,8 +110,8 @@ public class WStyles
     WReport.Write("________Styles Review________");
 
     var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
-    var stylesSettings = StyleProperties.GetSettingsList();
-
+    State.StylesSettings = StyleProperties.GetSettingsList();
+    
     if (styleDefinitionsPart != null)
     {
       var stylesCheck = styleDefinitionsPart.Styles;
@@ -120,13 +119,13 @@ public class WStyles
       {
         var wStyle = WStyle.GetStyleFromEncoded(style.StyleId);
         if (wStyle != null)
-          if (style.StyleRunProperties != null && Analis.IsValidStyle(wStyle))
+          if (style.StyleRunProperties != null && CheckParagraph.IsValidStyle(wStyle.Decoded))
           {
             var runProperties = style.StyleRunProperties;
             if (runProperties != null)
             {
               var properties = new StyleProperties();
-              properties.name = wStyle.decoded;
+              properties.name = wStyle.Decoded;
 
               if (runProperties.FontSize != null)
               {
@@ -194,15 +193,15 @@ public class WStyles
               else
                 properties.fontType = "Times New Roman";
 
-              var settings = stylesSettings.FirstOrDefault(s => s.name == properties.name);
+              var settings = State.StylesSettings.FirstOrDefault(s => s.name == properties.name);
 
               if (settings != null)
               {
                 var diff = WReport.OnCompareStyleSettings(settings, properties);
                 if (!string.IsNullOrEmpty(diff))
                 {
-                  WReport.Write( $"\n[{wStyle.decoded}]");
-                  WReport.Write( diff);
+                  WReport.Write($"\n[{wStyle.Decoded}]");
+                  WReport.Write(diff);
                 }
               }
             }
