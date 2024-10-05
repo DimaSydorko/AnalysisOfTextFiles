@@ -41,7 +41,7 @@ public class WStyles
                 var name = propertyName.GetValue(styleNameObj)?.ToString();
                 if (!string.IsNullOrEmpty(name))
                 {
-                  if (isDec) style.SetDec(name);
+                  if (isDec) style.SetDec(WDecoding.RemoveSuffixIfExists(name));
                   else style.SetEnc(name);
                 }
               }
