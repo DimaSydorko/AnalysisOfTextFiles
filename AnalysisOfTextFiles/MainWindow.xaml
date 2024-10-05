@@ -42,16 +42,16 @@
                 <Label Content="Strict styles check" />
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="3" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid Grid.Row="3" Margin="0 4 0 0" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Background="#00000000">
-                <Button Name="AdminAuth" Visibility="{Binding IsAdminAuthBtn}" Width="28" Height="23"
-                        Content="🔑"
-                        Margin="10,0,10,0" Click="AdminAuth_OnClick" Background="#FFF" />
-                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="28" Height="23"
-                        Content="🔐"
+                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="128" Height="23"
+                        Content="Change password 🔐"
                         Margin="10,0,10,0" Click="AdminChangePass_OnClick" Background="#FFF" />
-                <Button Name="AdminEdit" Visibility="{Binding IsAdminEditBtn}" Width="28" Height="23" Content="🛠️"
+                <Button Name="AdminEdit" Visibility="{Binding IsAdminEditBtn}" Width="78" Height="23" Content="Settings 🛠️"
                         Margin="10,0,10,0" Click="AdminEdit_OnClick" Background="#FFF" />
+                <Button Name="AdminAuth" Visibility="{Binding IsAdminAuthBtn}" Width="108" Height="23"
+                        Content="Authorization 🔑"
+                        Margin="10,0,10,0" Click="AdminAuth_OnClick" Background="#FFF" />
             </StackPanel>
         </Grid>
     </Grid>
