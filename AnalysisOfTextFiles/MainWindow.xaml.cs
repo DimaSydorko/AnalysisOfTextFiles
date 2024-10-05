@@ -36,6 +36,7 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   private static bool IsСomments { get; set; } = true;
+  private static bool IsStrictMode { get; set; } = false;
 
   public Visibility IsAdminEditBtn
   {
@@ -87,6 +88,7 @@ public partial class MainWindow : INotifyPropertyChanged
   {
     State.FilePath = WFilePath.Open();
     State.IsСomments = IsСomments;
+    State.IsStrictMode = IsStrictMode;
 
     if (State.FilePath.full == null) return;
 
@@ -123,6 +125,10 @@ public partial class MainWindow : INotifyPropertyChanged
   private void RewriteCheckBox_OnClick(object sender, RoutedEventArgs e)
   {
     IsСomments = !IsСomments;
+  }
+  private void StrictCheckBox_OnClick(object sender, RoutedEventArgs e)
+  {
+    IsStrictMode = !IsStrictMode;
   }
 
   private void AdminEdit_OnClick(object sender, RoutedEventArgs e)

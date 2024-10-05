@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Wordprocessing;
 public class State
 {
   public static bool IsСomments { get; set; } = true;
+  public static bool IsStrictMode { get; set; } = false;
   public static bool IsAdminAuth { get; set; } = false;
   public static string KeyWord { get; set; } = "";
   public static string Content { get; set; } = "";

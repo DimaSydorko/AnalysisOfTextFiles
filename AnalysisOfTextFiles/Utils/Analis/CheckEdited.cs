@@ -28,9 +28,13 @@ public class CheckEdited
 
   private static bool AreRunPropertiesEqual(RunProperties? firstProps, RunProperties? secondProps)
   {
+    if (State.IsStrictMode)
+    {
+      if (firstProps == null && secondProps == null) return true;
+      if (firstProps == null || secondProps == null) return false;
+    }
+    
     if (firstProps == null) return true;
-    // if (firstProps == null && secondProps == null) return true;
-    // if (firstProps == null || secondProps == null) return false;
     if (secondProps == null)
     {
       if (firstProps.Bold?.Val != null || firstProps.Italic?.Val != null || firstProps.FontSize?.Val != null ||
