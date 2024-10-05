@@ -1,54 +1,93 @@
 ﻿using System;
+using System.Collections.Generic;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace AnalysisOfTextFiles.Objects;
 
 public class CheckPage
 {
+  private static int SmInPoints(double sm)
+  {
+    return Convert.ToInt32(Math.Ceiling(sm * 567));
+  }
+
+  private static double PointsInSm(int points)
+  {
+    return Math.Round((double)points / 567, 2, MidpointRounding.ToEven);
+  }
+
+  private static readonly Dictionary<string, (int Width, int Height)> PageSizes = new Dictionary<string, (int, int)>
+  {
+    { "A3", (16838, 23811) },
+    { "A4", (11906, 16838) },
+    { "A5", (8391, 11906) },
+    { "letter", (12240, 15840) }
+  };
+
   public static void CheckDimensions(SectionProperties section)
   {
     var pageSize = section.GetFirstChild<PageSize>();
     if (pageSize == null) return;
 
-    var isLetter = pageSize.Width == 12240 && pageSize.Height == 15840;
-    var isA4 = pageSize.Width == 11906 && pageSize.Height == 16838;
+    List<string> allowedSizes = State.PageSettings.Size;
+    List<string> allowedOrientations = State.PageSettings.Orientation;
 
-    if (!isLetter && !isA4)
+    // Check if the page size is valid according to the allowed sizes
+    bool isValidSize = false;
+    foreach (var size in allowedSizes)
     {
-      WReport.Write("Invalid page size, should be 'letter' or 'A4'");
+      if (PageSizes.ContainsKey(size))
+      {
+        var (allowedWidth, allowedHeight) = PageSizes[size];
+        int pageWidth = Convert.ToInt32(pageSize.Width.Value);
+        int pageHeight = Convert.ToInt32(pageSize.Height.Value);
+
+        if ((pageWidth == allowedWidth && pageHeight == allowedHeight) ||
+            (pageWidth == allowedHeight && pageHeight == allowedWidth))
+        {
+          isValidSize = true;
+          break;
+        }
+      }
     }
 
-    var isLandscape = pageSize.Orient?.Value == PageOrientationValues.Landscape;
-
-    if (isLandscape)
+    if (!isValidSize)
     {
-      WReport.Write("Invalid page orientation: 'Landscape'");
+      WReport.Write("Invalid page size. Allowed sizes are: " + string.Join(", ", allowedSizes));
+    }
+
+    // Check orientation
+    var isLandscape = pageSize.Orient?.Value == PageOrientationValues.Landscape;
+    var currentOrientation = isLandscape ? "landscape" : "portrait"; // 'h' for landscape, 'v' for portrait
+
+    if (!allowedOrientations.Contains(currentOrientation))
+    {
+      WReport.Write(
+        $"Invalid page orientation: '{currentOrientation}'. Allowed orientations are: {string.Join(", ", allowedOrientations)}");
     }
   }
 
   public static void CheckPageMargin(SectionProperties section)
   {
     var pageMargin = section.GetFirstChild<PageMargin>();
-    const int mTop = 1418, mBottom = 851, mLeft = 1134, mRight = 1134, mFooter = 709, mHeader = 709;
+    WPage page = State.PageSettings;
 
     if (pageMargin == null) return;
-
-    double PointsIntoSm(int points) => Math.Round((double)points / 567, 2, MidpointRounding.ToEven);
 
     void CompareAndReport(string label, int actual, int expected)
     {
       if (actual != expected)
       {
-        WReport.Write($"{label}: {PointsIntoSm(actual)} sm -> {PointsIntoSm(expected)} sm");
+        WReport.Write($"{label}: {PointsInSm(actual)} sm -> {PointsInSm(expected)} sm");
       }
     }
 
-    CompareAndReport("Margins Top", pageMargin.Top, mTop);
-    CompareAndReport("Margins Bottom", pageMargin.Bottom, mBottom);
-    CompareAndReport("Margins Left", (int)pageMargin.Left.Value, mLeft);
-    CompareAndReport("Margins Right", (int)pageMargin.Right.Value, mRight);
+    CompareAndReport("Margin Top", pageMargin.Top, SmInPoints(page.MarginTop));
+    CompareAndReport("Margin Bottom", pageMargin.Bottom, SmInPoints(page.MarginBottom));
+    CompareAndReport("Margin Left", (int)pageMargin.Left.Value, SmInPoints(page.MarginLeft));
+    CompareAndReport("Margin Right", (int)pageMargin.Right.Value, SmInPoints(page.MarginRight));
 
-    CompareAndReport("Margin from Header", (int)pageMargin.Header.Value, mHeader);
-    CompareAndReport("Margin from Footer", (int)pageMargin.Footer.Value, mFooter);
+    CompareAndReport("Margin from Header", (int)pageMargin.Header.Value, SmInPoints(page.MarginHeader));
+    CompareAndReport("Margin from Footer", (int)pageMargin.Footer.Value, SmInPoints(page.MarginFooter));
   }
 }

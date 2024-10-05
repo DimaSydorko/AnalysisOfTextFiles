@@ -4,9 +4,7 @@ using System.Linq;
 
 public class StyleProperties
 {
-  private static string iniFilePath = "styleSettings.ini";
   public string name { get; set; }
-
   public string size { get; set; }
   public string position { get; set; }
   public string lineSpacing { get; set; }

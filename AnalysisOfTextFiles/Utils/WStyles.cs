@@ -111,6 +111,7 @@ public class WStyles
 
     var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
     State.StylesSettings = StyleProperties.GetSettingsList();
+    State.PageSettings = PageProperties.GetPageSettings();
     
     if (styleDefinitionsPart != null)
     {
