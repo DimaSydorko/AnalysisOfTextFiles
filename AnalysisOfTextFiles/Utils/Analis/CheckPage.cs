@@ -16,6 +16,11 @@ public class CheckPage
     return Math.Round((double)points / 567, 2, MidpointRounding.ToEven);
   }
 
+  public static bool IsEqual(int num1, int num2, int tolerance = 5)
+  {
+    return Math.Abs(num1 - num2) <= tolerance;
+  }
+  
   private static readonly Dictionary<string, (int Width, int Height)> PageSizes = new Dictionary<string, (int, int)>
   {
     { "A3", (16838, 23811) },
@@ -42,8 +47,8 @@ public class CheckPage
         int pageWidth = Convert.ToInt32(pageSize.Width.Value);
         int pageHeight = Convert.ToInt32(pageSize.Height.Value);
 
-        if ((pageWidth == allowedWidth && pageHeight == allowedHeight) ||
-            (pageWidth == allowedHeight && pageHeight == allowedWidth))
+        if ((IsEqual(pageWidth, allowedWidth) && IsEqual(pageHeight, allowedHeight)) ||
+            (IsEqual(pageWidth, allowedHeight) && IsEqual(pageHeight, allowedWidth)))
         {
           isValidSize = true;
           break;
@@ -76,7 +81,7 @@ public class CheckPage
 
     void CompareAndReport(string label, int actual, int expected)
     {
-      if (actual != expected)
+      if (!IsEqual(actual, expected, 3))
       {
         WReport.Write($"{label}: {PointsInSm(actual)} sm -> {PointsInSm(expected)} sm");
       }
