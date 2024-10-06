@@ -46,7 +46,7 @@ public class CheckParagraph
   {
     if (paragraph == null) return "Unknown";
 
-    bool isParExist = paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
+    bool isParExist = paragraph.ParagraphProperties != null && paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
 
     if (isParExist)
     {

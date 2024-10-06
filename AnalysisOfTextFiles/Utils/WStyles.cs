@@ -79,12 +79,6 @@ public class WStyles
             }
           }
         }
-
-        if (style.Encoded == null || style.Decoded == null)
-        {
-          int _test = 0;
-        }
-        
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
         if (tocStyles.Contains(style.Decoded))
