@@ -20,7 +20,7 @@ public class WStyles
     var list = stylesXml.ChildElements[1];
 
     //Map to get Encoded and Decoded StyleNames
-    foreach (var styleXml in stylesXml.ChildElements)
+    foreach (var styleXml in stylesXml.Elements<Style>())
       if (styleXml.ChildElements.Count >= 3)
       {
         var styleDec = styleXml.ChildElements[0];
@@ -52,9 +52,18 @@ public class WStyles
         var propertyDec = styleDec.GetType().GetProperty("Val");
         GetName(propertyDec, styleDec, true);
 
-        var propertyEnc = styleEnc.GetType().GetProperty("Val");
-        GetName(propertyEnc, styleEnc, false);
-
+      
+        var id = styleXml?.StyleId?.Value;
+        if (id != null)
+        {
+          style.SetEnc(id);
+        }
+        else
+        {
+          var propertyEnc = styleEnc.GetType().GetProperty("Val");
+          GetName(propertyEnc, styleEnc, false);
+        }
+        
         if (style.Encoded == null && style.Decoded != null)
         {
           var keyWordLength = State.KeyWord.Length;
@@ -71,6 +80,11 @@ public class WStyles
           }
         }
 
+        if (style.Encoded == null || style.Decoded == null)
+        {
+          int _test = 0;
+        }
+        
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
         if (tocStyles.Contains(style.Decoded))
@@ -112,13 +126,17 @@ public class WStyles
     var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
     State.StylesSettings = StyleProperties.GetSettingsList();
     State.PageSettings = PageProperties.GetPageSettings();
-    
+
     if (styleDefinitionsPart != null)
     {
       var stylesCheck = styleDefinitionsPart.Styles;
       foreach (var style in stylesCheck.Elements<Style>())
       {
-        var wStyle = WStyle.GetStyleFromEncoded(style.StyleId);
+        var rsidVal = style?.Rsid?.Val?.Value;
+        var styleVal = style?.StyleId?.Value;
+
+        var wStyle = WStyle.GetStyleFromEncoded(rsidVal ?? styleVal ?? style?.StyleId);
+
         if (wStyle != null)
           if (style.StyleRunProperties != null && CheckParagraph.IsValidStyle(wStyle.Decoded))
           {
@@ -210,6 +228,6 @@ public class WStyles
       }
     }
 
-    WReport.Write( "________Content Review________");
+    WReport.Write("________Content Review________");
   }
 }

@@ -46,12 +46,11 @@ public class CheckParagraph
   {
     if (paragraph == null) return "Unknown";
 
-    bool isParExist = paragraph.ParagraphProperties != null &&
-                      paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
+    bool isParExist = paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
 
     if (isParExist)
     {
-      string? styleName = paragraph.ParagraphProperties?.ParagraphStyleId?.Val;
+      string? styleName = paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value ?? paragraph.ParagraphProperties?.ParagraphStyleId?.Val;
       var style = WStyle.GetDecodedStyle(styleName);
       return style;
     }
@@ -61,7 +60,7 @@ public class CheckParagraph
   
   public static WStyle GetParagraphWStyle(Paragraph? paragraph)
   {
-    string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val;
+    string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val.Value ?? paragraph.ParagraphProperties.ParagraphStyleId.Val;
     WStyle style = WStyle.GetStyleFromEncoded(styleName);
     
     return style;
