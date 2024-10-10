@@ -127,6 +127,7 @@ public class WStyles
     var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
     State.StylesSettings = StyleProperties.GetSettingsList();
     State.PageSettings = PageProperties.GetPageSettings();
+    List<string> alreadyChecked = new List<string>();
 
     if (styleDefinitionsPart != null)
     {
@@ -137,13 +138,16 @@ public class WStyles
         var wStyle = WStyle.GetStyleFromEncoded(styleVal ?? style?.StyleId);
 
         if (wStyle != null)
-          if (style.StyleRunProperties != null && CheckParagraph.IsValidWStyle(wStyle))
+        {
+          bool isChecked = alreadyChecked.Contains(wStyle.Decoded);
+          if (!isChecked && style.StyleRunProperties != null && CheckParagraph.IsValidWStyle(wStyle))
           {
             var runProperties = style.StyleRunProperties;
             if (runProperties != null)
             {
               var properties = new StyleProperties();
               properties.name = wStyle.Decoded;
+              alreadyChecked.Add(wStyle.Decoded);
 
               if (runProperties.FontSize != null)
               {
@@ -222,6 +226,7 @@ public class WStyles
               }
             }
           }
+        }
       }
     }
 
