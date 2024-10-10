@@ -19,18 +19,6 @@ public class CheckParagraph
   
   public static List<string> allowedStyles = new() { "Heading1", "Heading2", "Heading3", "TOC1", "TOC2" };
 
-  public static bool IsValidStyle(string styleName)
-  {
-    var keyWordLength = State.KeyWord.Length;
-    if (keyWordLength <= styleName.Length)
-    {
-      var firstLetters = styleName.Substring(0, keyWordLength);
-      return allowedStyles.Contains(styleName) || firstLetters == State.KeyWord;
-    }
-
-    return false;
-  }
-  
   public static bool IsValidWStyle(WStyle style)
   {
     bool isInSettings = Convert.ToBoolean(State.StylesSettings.Exists(s => s.name == style.Decoded));

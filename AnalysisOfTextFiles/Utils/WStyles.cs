@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using DocumentFormat.OpenXml;
@@ -52,7 +53,7 @@ public class WStyles
         var propertyDec = styleDec.GetType().GetProperty("Val");
         GetName(propertyDec, styleDec, true);
 
-      
+
         var id = styleXml?.StyleId?.Value;
         if (id != null)
         {
@@ -63,7 +64,7 @@ public class WStyles
           var propertyEnc = styleEnc.GetType().GetProperty("Val");
           GetName(propertyEnc, styleEnc, false);
         }
-        
+
         if (style.Encoded == null && style.Decoded != null)
         {
           var keyWordLength = State.KeyWord.Length;
@@ -79,6 +80,7 @@ public class WStyles
             }
           }
         }
+
         //Rewrite TOC style names
         string[] tocStyles = { "toc 1", "toc 2", "toc 3", "TOC Heading" };
         if (tocStyles.Contains(style.Decoded))
@@ -113,6 +115,11 @@ public class WStyles
     return styles;
   }
 
+  private static string SpacingDecoding(string str)
+  {
+    return Convert.ToString(Convert.ToDouble(str) / 240);
+  }
+
   public static void Review()
   {
     WReport.Write("________Styles Review________");
@@ -126,13 +133,11 @@ public class WStyles
       var stylesCheck = styleDefinitionsPart.Styles;
       foreach (var style in stylesCheck.Elements<Style>())
       {
-        var rsidVal = style?.Rsid?.Val?.Value;
         var styleVal = style?.StyleId?.Value;
-
-        var wStyle = WStyle.GetStyleFromEncoded(rsidVal ?? styleVal ?? style?.StyleId);
+        var wStyle = WStyle.GetStyleFromEncoded(styleVal ?? style?.StyleId);
 
         if (wStyle != null)
-          if (style.StyleRunProperties != null && CheckParagraph.IsValidStyle(wStyle.Decoded))
+          if (style.StyleRunProperties != null && CheckParagraph.IsValidWStyle(wStyle))
           {
             var runProperties = style.StyleRunProperties;
             if (runProperties != null)
@@ -185,21 +190,19 @@ public class WStyles
                   var spacing = paragraphProperties?.SpacingBetweenLines;
                   if (spacing != null)
                   {
-                    properties.lineSpacingAfter = spacing.After?.Value ?? "0";
-                    properties.lineSpacingBefore = spacing.After?.Value ?? "0";
-                    properties.lineSpacing = spacing.Line?.Value ?? "0";
+                    properties.lineSpacingAfter = SpacingDecoding(spacing.After?.Value ?? "0");
+                    properties.lineSpacingBefore = SpacingDecoding(spacing.Before?.Value ?? "0");
+                    properties.lineSpacing = SpacingDecoding(spacing.Line?.Value ?? "0");
                   }
                 }
 
                 if (paragraphProperties?.TextAlignment != null)
                   properties.position = paragraphProperties?.TextAlignment?.Val;
               }
-              else
-              {
-                properties.lineSpacingAfter = "0";
-                properties.lineSpacingBefore = "0";
-                properties.lineSpacing = "1.5";
-              }
+
+              properties.lineSpacingAfter = properties.lineSpacingAfter ?? "0";
+              properties.lineSpacingBefore = properties.lineSpacingBefore ?? "0";
+              properties.lineSpacing = properties.lineSpacing ?? "1.5";
 
               if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
                 properties.fontType = runProperties.RunFonts.Ascii.InnerText;

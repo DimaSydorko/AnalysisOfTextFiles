@@ -172,12 +172,12 @@ public class WReport
     {
       if (property.Name != "after" && property.Name != "before")
       {
-        var value1 = property.GetValue(settings);
-        var value2 = property.GetValue(value);
+        var setting = property.GetValue(settings);
+        var currValue = property.GetValue(value);
 
-        if (!Equals(value1, value2))
+        if (!Equals(setting, currValue))
         {
-          diff += $"{property.Name}: {value1} -> {value2}\n";
+          diff += $"{property.Name}: {setting} -> {currValue}\n";
         }
       }
     }
