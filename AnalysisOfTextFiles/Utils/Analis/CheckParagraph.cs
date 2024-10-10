@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -32,10 +33,18 @@ public class CheckParagraph
   
   public static bool IsValidWStyle(WStyle style)
   {
+    bool isInSettings = Convert.ToBoolean(State.StylesSettings.Exists(s => s.name == style.Decoded));
+
+    if (isInSettings)
+    {
+      return true;
+    }
+    
     var keyWordLength = State.KeyWord.Length;
     if (keyWordLength <= style.Decoded.Length)
     {
       var firstLetters = style.Decoded.Substring(0, keyWordLength);
+
       return allowedStyles.Contains(style.Encoded) || firstLetters == State.KeyWord;
     }
 
