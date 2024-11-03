@@ -14,13 +14,10 @@ public class CheckEdited
     for (int i = 1; i < runs.Count; i++)
     {
       var currentRunProps = runs[i].RunProperties;
-
-      if (currentRunProps != null)
+      if (!AreRunPropertiesEqual(firstRunProps, currentRunProps))
       {
-        currentRunProps = runs[i].RunProperties;
+        return true;
       }
-
-      if (!AreRunPropertiesEqual(firstRunProps, currentRunProps)) return true;
     }
 
     return false;
@@ -58,8 +55,6 @@ public class CheckEdited
     string? styleName = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(paragraph));
     bool isEdited = HasTextStyleChanged(paragraph);
 
-    var firstLetters = styleName.Substring(0, State.KeyWord.Length);
-    if (firstLetters == State.KeyWord) return isEdited;
-    return false;
+    return styleName?.StartsWith(State.KeyWord) == true && isEdited;
   }
 }
