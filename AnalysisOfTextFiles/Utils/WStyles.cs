@@ -143,86 +143,53 @@ public class WStyles
           if (!isChecked && style.StyleRunProperties != null && CheckParagraph.IsValidWStyle(wStyle))
           {
             var runProperties = style.StyleRunProperties;
-            if (runProperties != null)
+            var properties = new StyleProperties();
+            properties.name = wStyle.Decoded;
+            alreadyChecked.Add(wStyle.Decoded);
+
+            if (runProperties.FontSize != null)
             {
-              var properties = new StyleProperties();
-              properties.name = wStyle.Decoded;
-              alreadyChecked.Add(wStyle.Decoded);
+              var val = runProperties.FontSize.Val.Value;
+              var halfVal = int.Parse(val) / 2;
+              properties.size = $"{halfVal}";
+            }
 
-              if (runProperties.FontSize != null)
+            properties.color = runProperties.Color?.Val ?? "000000";
+            properties.bold = runProperties.Bold != null ? "true" : "false";
+            properties.italic = runProperties.Italic != null ? "true" : "false";
+            properties.underline = runProperties.Underline != null ? "true" : "false";
+            properties.capitalize = runProperties.Caps != null ? "true" : "false";
+
+            properties.position = runProperties.Position?.Val ?? "Left";
+
+            var paragraphProperties = style.StyleParagraphProperties;
+            if (paragraphProperties != null)
+            {
+              if (paragraphProperties.SpacingBetweenLines != null)
               {
-                var val = runProperties.FontSize.Val.Value;
-                var halfVal = int.Parse(val) / 2;
-                properties.size = $"{halfVal}";
+                var spacing = paragraphProperties.SpacingBetweenLines;
+                properties.lineSpacingAfter = SpacingDecoding(spacing.After?.Value ?? "0");
+                properties.lineSpacingBefore = SpacingDecoding(spacing.Before?.Value ?? "0");
+                properties.lineSpacing = SpacingDecoding(spacing.Line?.Value ?? "0");
               }
 
-              if (runProperties.Color != null)
-                properties.color = runProperties.Color?.Val ?? "000000";
-              else
-                properties.color = "000000";
+              properties.position = paragraphProperties.Justification?.Val?.Value.ToString() ?? properties.position;
+            }
 
-              if (runProperties.Position != null)
-                properties.position = runProperties.Position.Val;
-              else
-                properties.position = "center";
+            properties.lineSpacingAfter = properties.lineSpacingAfter ?? "0";
+            properties.lineSpacingBefore = properties.lineSpacingBefore ?? "0";
+            properties.lineSpacing = properties.lineSpacing ?? "1.5";
+            properties.fontType = runProperties.RunFonts?.Ascii?.InnerText ?? "Times New Roman";
 
-              if (runProperties.Bold != null)
-                properties.bold = "true";
-              else
-                properties.bold = "false";
+            var settings = State.StylesSettings.FirstOrDefault(s => s.name == properties.name);
 
-              if (runProperties.Italic != null)
-                properties.italic = "true";
-              else
-                properties.italic = "false";
-
-              if (runProperties.Underline != null)
-                properties.underline = "true";
-              else
-                properties.underline = "false";
-
-              if (runProperties.Caps != null)
-                properties.capitalize = "true";
-              else
-                properties.capitalize = "false";
-
-              var paragraphProperties = style.StyleParagraphProperties;
-              if (paragraphProperties != null)
+            if (settings != null)
+            {
+              var diff = WReport.OnCompareStyleSettings(settings, properties);
+              if (!string.IsNullOrEmpty(diff))
               {
-                if (paragraphProperties?.SpacingBetweenLines != null)
-                {
-                  var spacing = paragraphProperties?.SpacingBetweenLines;
-                  if (spacing != null)
-                  {
-                    properties.lineSpacingAfter = SpacingDecoding(spacing.After?.Value ?? "0");
-                    properties.lineSpacingBefore = SpacingDecoding(spacing.Before?.Value ?? "0");
-                    properties.lineSpacing = SpacingDecoding(spacing.Line?.Value ?? "0");
-                  }
-                }
-
-                if (paragraphProperties?.TextAlignment != null)
-                  properties.position = paragraphProperties?.TextAlignment?.Val;
-              }
-
-              properties.lineSpacingAfter = properties.lineSpacingAfter ?? "0";
-              properties.lineSpacingBefore = properties.lineSpacingBefore ?? "0";
-              properties.lineSpacing = properties.lineSpacing ?? "1.5";
-
-              if (runProperties.RunFonts != null && runProperties.RunFonts.Ascii != null)
-                properties.fontType = runProperties.RunFonts.Ascii.InnerText;
-              else
-                properties.fontType = "Times New Roman";
-
-              var settings = State.StylesSettings.FirstOrDefault(s => s.name == properties.name);
-
-              if (settings != null)
-              {
-                var diff = WReport.OnCompareStyleSettings(settings, properties);
-                if (!string.IsNullOrEmpty(diff))
-                {
-                  WReport.Write($"\n[{wStyle.Decoded}]");
-                  WReport.Write(diff);
-                }
+                WReport.Write($"\n[{wStyle.Decoded}]");
+                WReport.Write(diff);
               }
             }
           }
