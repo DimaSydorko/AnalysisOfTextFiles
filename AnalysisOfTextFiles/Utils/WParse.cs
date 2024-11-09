@@ -19,6 +19,14 @@ public class WParse
     State.WDocument.Close();
   }
 
+  public static void StyleSettings()
+  {
+    WReport.CreateStylesFile();
+    State.Styles = WStyles.GetDocStyles();
+    WStyles.AnaliseStylesSettings();
+    State.WDocument.Close();
+  }
+
   private static void _Body()
   {
     WReport.Write("----Boody----");

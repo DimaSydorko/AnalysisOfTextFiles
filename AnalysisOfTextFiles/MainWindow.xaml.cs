@@ -9,7 +9,7 @@ namespace AnalysisOfTextFiles;
 
 public partial class MainWindow : INotifyPropertyChanged
 {
-  private Visibility _isAdminEditBtn, _isAdminAuthBtn, _isAdminChangePassBtn;
+  private Visibility _isAdminEditBtn, _isAdminAuthBtn, _isAdminChangePassBtn, _IsAdminGetDocSttingsBtn;
   private readonly AdminAuthWindow adminAuthWindow = new();
 
   public MainWindow()
@@ -17,6 +17,7 @@ public partial class MainWindow : INotifyPropertyChanged
     IsAdminAuthBtn = !State.IsAdminAuth && AdminSettings.IsUserAdmin() ? Visibility.Visible : Visibility.Collapsed;
     IsAdminEditBtn = State.IsAdminAuth ? Visibility.Visible : Visibility.Collapsed;
     IsAdminChangePassBtn = State.IsAdminAuth ? Visibility.Visible : Visibility.Collapsed;
+    IsAdminGetDocSttingsBtn = State.IsAdminAuth ? Visibility.Visible : Visibility.Collapsed;
 
     InitializeComponent();
     DataContext = this;
@@ -32,6 +33,10 @@ public partial class MainWindow : INotifyPropertyChanged
     adminAuthWindow.IsAdminEditBtn += visibility =>
     {
       IsAdminEditBtn = visibility ? Visibility.Visible : Visibility.Collapsed;
+    };
+    adminAuthWindow.IsAdminGetDocSttingsBtn+= visibility =>
+    {
+      IsAdminGetDocSttingsBtn = visibility ? Visibility.Visible : Visibility.Collapsed;
     };
   }
 
@@ -76,7 +81,18 @@ public partial class MainWindow : INotifyPropertyChanged
       }
     }
   }
-
+  public Visibility IsAdminGetDocSttingsBtn
+  {
+    get => _IsAdminGetDocSttingsBtn;
+    set
+    {
+      if (_IsAdminGetDocSttingsBtn != value)
+      {
+        _IsAdminGetDocSttingsBtn = value;
+        OnPropertyChanged("IsAdminGetDocSttingsBtn");
+      }
+    }
+  }
   public event PropertyChangedEventHandler PropertyChanged;
 
   protected void OnPropertyChanged(string propertyName)
@@ -119,6 +135,39 @@ public partial class MainWindow : INotifyPropertyChanged
 
       var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
       MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
+    }
+  }
+
+  public void GetStyles_OnClick(object sender, RoutedEventArgs e)
+  {
+    State.FilePath = WFilePath.Open();
+
+    if (State.FilePath.full == null) return;
+
+    WordprocessingDocument document = null;
+    try
+    {
+      document = WordprocessingDocument.Open(State.FilePath.full, false);
+    }
+    catch (Exception ex)
+    {
+      MessageBox.Show(ex.Message, "Error");
+    }
+
+    if (document != null)
+    {
+      State.WDocument = document;
+
+      var stopwatch = new Stopwatch();
+      stopwatch.Start();
+
+      WParse.StyleSettings();
+
+      stopwatch.Stop();
+      var elapsedTime = stopwatch.Elapsed;
+
+      var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
+      MessageBox.Show($"Styles in file {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
     }
   }
 

@@ -13,7 +13,7 @@ public partial class AdminAuthWindow
     InitializeComponent();
   }
 
-  public event VisibilityChangedEventHandler IsAdminEditBtn, IsAdminChangePassBtn, IsAdminAuthBtn;
+  public event VisibilityChangedEventHandler IsAdminEditBtn, IsAdminChangePassBtn, IsAdminAuthBtn, IsAdminGetDocSttingsBtn;
 
   private void BtnLogin_Click(object sender, RoutedEventArgs e)
   {
@@ -27,6 +27,7 @@ public partial class AdminAuthWindow
       IsAdminAuthBtn?.Invoke(false);
       IsAdminEditBtn?.Invoke(true);
       IsAdminChangePassBtn?.Invoke(true);
+      IsAdminGetDocSttingsBtn?.Invoke(true);
 
       MessageBox.Show("Login successful!");
       Close();

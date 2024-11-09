@@ -11,6 +11,7 @@ public class WFilePath
   public string withoutExtension { get; set; }
   public string analized { get; set; }
   public string report { get; set; }
+  public string stylesSettings { get; set; }
 
   public static WFilePath Open()
   {
@@ -29,6 +30,7 @@ public class WFilePath
       path.withoutExtension = Path.GetFileNameWithoutExtension(path.full);
       path.analized = $"{path.directory}/{path.withoutExtension} ANALYSED.docx";
       path.report = $"{path.directory}/{path.withoutExtension} Report.txt";
+      path.stylesSettings = $"{path.directory}/{path.withoutExtension} Styles Settings.txt";
     }
 
     return path;

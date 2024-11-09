@@ -120,6 +120,52 @@ public class WStyles
     return Convert.ToString(Convert.ToDouble(str) / 240);
   }
 
+  private static StyleProperties _getStyleProperties(Style style)
+  {
+    var styleVal = style?.StyleId?.Value;
+    var wStyle = WStyle.GetStyleFromEncoded(styleVal ?? style?.StyleId);
+    var runProperties = style.StyleRunProperties;
+    var properties = new StyleProperties();
+
+    properties.name = wStyle.Decoded;
+
+    if (runProperties.FontSize != null)
+    {
+      var val = runProperties.FontSize.Val.Value;
+      var halfVal = int.Parse(val) / 2;
+      properties.size = $"{halfVal}";
+    }
+
+    properties.color = runProperties.Color?.Val ?? "000000";
+    properties.bold = runProperties.Bold != null ? "true" : "false";
+    properties.italic = runProperties.Italic != null ? "true" : "false";
+    properties.underline = runProperties.Underline != null ? "true" : "false";
+    properties.capitalize = runProperties.Caps != null ? "true" : "false";
+
+    properties.position = runProperties.Position?.Val ?? "Left";
+
+    var paragraphProperties = style.StyleParagraphProperties;
+    if (paragraphProperties != null)
+    {
+      if (paragraphProperties.SpacingBetweenLines != null)
+      {
+        var spacing = paragraphProperties.SpacingBetweenLines;
+        properties.lineSpacingAfter = SpacingDecoding(spacing.After?.Value ?? "0");
+        properties.lineSpacingBefore = SpacingDecoding(spacing.Before?.Value ?? "0");
+        properties.lineSpacing = SpacingDecoding(spacing.Line?.Value ?? "0");
+      }
+
+      properties.position = paragraphProperties.Justification?.Val?.Value.ToString() ?? properties.position;
+    }
+
+    properties.lineSpacingAfter = properties.lineSpacingAfter ?? "0";
+    properties.lineSpacingBefore = properties.lineSpacingBefore ?? "0";
+    properties.lineSpacing = properties.lineSpacing ?? "1.5";
+    properties.fontType = runProperties.RunFonts?.Ascii?.InnerText ?? "Times New Roman";
+
+    return properties;
+  }
+
   public static void Review()
   {
     WReport.Write("________Styles Review________");
@@ -142,46 +188,9 @@ public class WStyles
           bool isChecked = alreadyChecked.Contains(wStyle.Decoded);
           if (!isChecked && style.StyleRunProperties != null && CheckParagraph.IsValidWStyle(wStyle))
           {
-            var runProperties = style.StyleRunProperties;
-            var properties = new StyleProperties();
-            properties.name = wStyle.Decoded;
-            alreadyChecked.Add(wStyle.Decoded);
-
-            if (runProperties.FontSize != null)
-            {
-              var val = runProperties.FontSize.Val.Value;
-              var halfVal = int.Parse(val) / 2;
-              properties.size = $"{halfVal}";
-            }
-
-            properties.color = runProperties.Color?.Val ?? "000000";
-            properties.bold = runProperties.Bold != null ? "true" : "false";
-            properties.italic = runProperties.Italic != null ? "true" : "false";
-            properties.underline = runProperties.Underline != null ? "true" : "false";
-            properties.capitalize = runProperties.Caps != null ? "true" : "false";
-
-            properties.position = runProperties.Position?.Val ?? "Left";
-
-            var paragraphProperties = style.StyleParagraphProperties;
-            if (paragraphProperties != null)
-            {
-              if (paragraphProperties.SpacingBetweenLines != null)
-              {
-                var spacing = paragraphProperties.SpacingBetweenLines;
-                properties.lineSpacingAfter = SpacingDecoding(spacing.After?.Value ?? "0");
-                properties.lineSpacingBefore = SpacingDecoding(spacing.Before?.Value ?? "0");
-                properties.lineSpacing = SpacingDecoding(spacing.Line?.Value ?? "0");
-              }
-
-              properties.position = paragraphProperties.Justification?.Val?.Value.ToString() ?? properties.position;
-            }
-
-            properties.lineSpacingAfter = properties.lineSpacingAfter ?? "0";
-            properties.lineSpacingBefore = properties.lineSpacingBefore ?? "0";
-            properties.lineSpacing = properties.lineSpacing ?? "1.5";
-            properties.fontType = runProperties.RunFonts?.Ascii?.InnerText ?? "Times New Roman";
-
+            var properties = _getStyleProperties(style);
             var settings = State.StylesSettings.FirstOrDefault(s => s.name == properties.name);
+            alreadyChecked.Add(wStyle.Decoded);
 
             if (settings != null)
             {
@@ -198,5 +207,50 @@ public class WStyles
     }
 
     WReport.Write("________Content Review________");
+  }
+
+  public static void AnaliseStylesSettings()
+  {
+    var styleDefinitionsPart = State.WDocument.MainDocumentPart.StyleDefinitionsPart;
+    if (styleDefinitionsPart != null)
+    {
+      var stylesCheck = styleDefinitionsPart.Styles;
+      List<string> alreadyChecked = new List<string>();
+      foreach (var style in stylesCheck.Elements<Style>())
+      {
+        var styleVal = style?.StyleId?.Value;
+        var wStyle = WStyle.GetStyleFromEncoded(styleVal ?? style?.StyleId);
+        if (wStyle != null)
+        {
+          bool isChecked = alreadyChecked.Contains(wStyle.Decoded);
+
+          if (!isChecked && style.StyleRunProperties != null)
+          {
+            var properties = _getStyleProperties(style);
+            alreadyChecked.Add(wStyle.Decoded);
+
+            void Write(string message)
+            {
+              WReport.Write($"{message}", false, true);
+            }
+
+            Write($"[{properties.name}]");
+            Write($"name={properties.name}");
+            Write($"size={properties.size}");
+            Write($"position={properties.position}");
+            Write($"lineSpacing={properties.lineSpacing}");
+            Write($"lineSpacingBefore={properties.lineSpacingBefore}");
+            Write($"lineSpacingAfter={properties.lineSpacingAfter}");
+            Write($"color={properties.color}");
+            Write($"fontType={properties.fontType}");
+            Write($"bold={properties.bold}");
+            Write($"italic={properties.italic}");
+            Write($"underline={properties.underline}");
+            Write($"capitalize={properties.capitalize}");
+            Write("\n");
+          }
+        }
+      }
+    }
   }
 }

@@ -23,22 +23,24 @@ public class WReport
     InsteadBefore,
     InsteadAfter,
   }
-  public static void Write(string reportMessage, bool isRewrite = false)
+  public static void Write(string reportMessage, bool isRewrite = false, bool isSettings = false)
   {
-    if (isRewrite)
-    {
-      File.WriteAllText(State.FilePath.report, $"{reportMessage}\n");
-    }
-    else
-    {
-      File.AppendAllText(State.FilePath.report, $"{reportMessage}\n");
-    }
+    var mess = $"{reportMessage}\n";
+    var filePath = isSettings ? State.FilePath.stylesSettings : State.FilePath.report;
+    
+    if (isRewrite) File.WriteAllText(filePath, mess);
+    else File.AppendAllText(filePath, mess);
   }
 
   public static void CreateReportFile()
   {
     var timestamp = DateTime.Now.ToString("F");
     Write($"-----------------Report ({timestamp})----------------", true);
+  }
+    public static void CreateStylesFile()
+  {
+    var timestamp = DateTime.Now.ToString("F");
+    Write($"-----------------Styles settings ({timestamp})----------------", true, true);
   }
   
   public static void Order(Paragraph paragraph, CheckParagraph.ContentType type, int idx, string styleName, List<string> order, OrderType orderType, string? wrongOrder = "",  WTable? table = null)
