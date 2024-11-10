@@ -16,7 +16,7 @@
                 <TextBlock Text="Key word:" Margin="10" VerticalAlignment="Center" />
                 <TextBox x:Name="keyWord" Margin="0 0 10 0" VerticalAlignment="Center" Width="130" />
                 <TextBlock Margin="5 10 5 10" VerticalAlignment="Center" >
-                    <Hyperlink NavigateUri="https://github.com/DimaSydorko/AnalysisOfTextFiles"
+                    <Hyperlink NavigateUri="https://github.com/DimaSydorko/AnalysisOfTextFiles#readme-style-and-page-settings-configuration"
                                RequestNavigate="Hyperlink_RequestNavigate">
                         ℹ️
                     </Hyperlink>
