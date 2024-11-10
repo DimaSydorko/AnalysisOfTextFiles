@@ -23,6 +23,7 @@ public class WParse
   {
     WReport.CreateStylesFile();
     State.Styles = WStyles.GetDocStyles();
+    CheckPage.AnalisePageSettings();
     WStyles.AnaliseStylesSettings();
     State.WDocument.Close();
   }

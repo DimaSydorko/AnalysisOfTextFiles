@@ -129,11 +129,13 @@ public class WStyles
 
     properties.name = wStyle.Decoded;
 
-    if (runProperties.FontSize != null)
-    {
-      var val = runProperties.FontSize.Val.Value;
+      var val = runProperties?.FontSize?.Val?.Value ?? runProperties?.FontSizeComplexScript?.Val?.Value ?? "24";
       var halfVal = int.Parse(val) / 2;
       properties.size = $"{halfVal}";
+    
+    if (properties.size == null)
+    {
+      int test = 1;
     }
 
     properties.color = runProperties.Color?.Val ?? "000000";
@@ -229,25 +231,20 @@ public class WStyles
             var properties = _getStyleProperties(style);
             alreadyChecked.Add(wStyle.Decoded);
 
-            void Write(string message)
-            {
-              WReport.Write($"{message}", false, true);
-            }
-
-            Write($"[{properties.name}]");
-            Write($"name={properties.name}");
-            Write($"size={properties.size}");
-            Write($"position={properties.position}");
-            Write($"lineSpacing={properties.lineSpacing}");
-            Write($"lineSpacingBefore={properties.lineSpacingBefore}");
-            Write($"lineSpacingAfter={properties.lineSpacingAfter}");
-            Write($"color={properties.color}");
-            Write($"fontType={properties.fontType}");
-            Write($"bold={properties.bold}");
-            Write($"italic={properties.italic}");
-            Write($"underline={properties.underline}");
-            Write($"capitalize={properties.capitalize}");
-            Write("\n");
+            WReport.WriteSettings($"[{properties.name}]");
+            WReport.WriteSettings($"name={properties.name}");
+            WReport.WriteSettings($"size={properties.size}");
+            WReport.WriteSettings($"position={properties.position}");
+            WReport.WriteSettings($"lineSpacing={properties.lineSpacing}");
+            WReport.WriteSettings($"lineSpacingBefore={properties.lineSpacingBefore}");
+            WReport.WriteSettings($"lineSpacingAfter={properties.lineSpacingAfter}");
+            WReport.WriteSettings($"color={properties.color}");
+            WReport.WriteSettings($"fontType={properties.fontType}");
+            WReport.WriteSettings($"bold={properties.bold}");
+            WReport.WriteSettings($"italic={properties.italic}");
+            WReport.WriteSettings($"underline={properties.underline}");
+            WReport.WriteSettings($"capitalize={properties.capitalize}");
+            WReport.WriteSettings("");
           }
         }
       }

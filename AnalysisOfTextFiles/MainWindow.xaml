@@ -54,7 +54,7 @@
         </Grid>
         <Grid Grid.Row="4">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center"
-                        Visibility="{Binding IsAdminGetDocSttingsBtn}">
+                        Visibility="{Binding !IsAdminGetDocSttingsBtn}">
                 <Button Name="DocSettings" Visibility="Visible" Width="250" Content="Get Document settings 🔬"
                         Margin="10,0,10,10" Click="GetStyles_OnClick" Background="#FFF" />
             </StackPanel>

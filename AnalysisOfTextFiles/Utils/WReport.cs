@@ -32,6 +32,11 @@ public class WReport
     else File.AppendAllText(filePath, mess);
   }
 
+  public static void WriteSettings(string reportMessage, bool isRewrite = false)
+  {
+    Write(reportMessage, isRewrite, true);
+  }
+
   public static void CreateReportFile()
   {
     var timestamp = DateTime.Now.ToString("F");
