@@ -1,5 +1,9 @@
 # README
 
+#### Run comands:
+
+build: `dotnet publish -c Release -r win-x86 --self-contained true /p:PublishSingleFile=true`
+
 ## Style and Page Settings Configuration
 
 This document explains the configuration settings for style formatting (`[STYLE_NAME]` sections) and page settings (`{PAGE}` section) in documents for standardized formatting and layout requirements.
