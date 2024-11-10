@@ -30,12 +30,12 @@ public partial class AdminChangePassWindow
 
     HashAndSavePassword(password);
     MessageBox.Show("Password updated successful!");
-    Close();
+    Hide();
   }
 
   private void BtnClose_Click(object sender, RoutedEventArgs e)
   {
-    Close();
+    Hide();
   }
 
   private bool ValidateCredentials(string password)

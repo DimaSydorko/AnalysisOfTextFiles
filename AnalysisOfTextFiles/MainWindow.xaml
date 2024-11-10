@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Analysis Of Text Files" Width="300" WindowStartupLocation="CenterScreen"
+        Title="Analyser of docx" Width="300" WindowStartupLocation="CenterScreen"
         SizeToContent="Height" Background="#ADD8FF">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -54,9 +55,15 @@
         </Grid>
         <Grid Grid.Row="4">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center"
-                        Visibility="{Binding !IsAdminGetDocSttingsBtn}">
+                        Visibility="{Binding IsAdminGetDocSttingsBtn}">
                 <Button Name="DocSettings" Visibility="Visible" Width="250" Content="Get Document settings 🔬"
                         Margin="10,0,10,10" Click="GetStyles_OnClick" Background="#FFF" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="5">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center">
+                <Button Name="HelpCenter" Visibility="Visible" Width="250" Content="About ℹ️ ️"
+                        Margin="10,0,10,10" Click="About_OnClick" Background="#00000000" BorderThickness="0" />
             </StackPanel>
         </Grid>
     </Grid>

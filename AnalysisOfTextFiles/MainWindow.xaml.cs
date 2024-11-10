@@ -11,6 +11,7 @@ public partial class MainWindow : INotifyPropertyChanged
 {
   private Visibility _isAdminEditBtn, _isAdminAuthBtn, _isAdminChangePassBtn, _IsAdminGetDocSttingsBtn;
   private readonly AdminAuthWindow adminAuthWindow = new();
+  private readonly AboutWindow aboutWindow = new();
 
   public MainWindow()
   {
@@ -34,7 +35,7 @@ public partial class MainWindow : INotifyPropertyChanged
     {
       IsAdminEditBtn = visibility ? Visibility.Visible : Visibility.Collapsed;
     };
-    adminAuthWindow.IsAdminGetDocSttingsBtn+= visibility =>
+    adminAuthWindow.IsAdminGetDocSttingsBtn += visibility =>
     {
       IsAdminGetDocSttingsBtn = visibility ? Visibility.Visible : Visibility.Collapsed;
     };
@@ -81,6 +82,7 @@ public partial class MainWindow : INotifyPropertyChanged
       }
     }
   }
+
   public Visibility IsAdminGetDocSttingsBtn
   {
     get => _IsAdminGetDocSttingsBtn;
@@ -93,6 +95,7 @@ public partial class MainWindow : INotifyPropertyChanged
       }
     }
   }
+
   public event PropertyChangedEventHandler PropertyChanged;
 
   protected void OnPropertyChanged(string propertyName)
@@ -198,5 +201,11 @@ public partial class MainWindow : INotifyPropertyChanged
     var adminChangePass = new AdminChangePassWindow();
     adminChangePass.Owner = this;
     adminChangePass.ShowDialog();
+  }
+
+  private void About_OnClick(object sender, RoutedEventArgs e)
+  {
+    aboutWindow.Owner = this;
+    aboutWindow.ShowDialog();
   }
 }

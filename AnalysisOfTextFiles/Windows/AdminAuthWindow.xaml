@@ -15,7 +15,7 @@
             <TextBlock Text="Password:" Margin="10" VerticalAlignment="Center" />
             <PasswordBox x:Name="txtPassword" Margin="10" VerticalAlignment="Center" Width="200" />
         </Grid>
-        <Button Content="Login" Margin="10 0" Grid.Row="2" Click="BtnLogin_Click" />
+        <Button Content="Login" Margin="10 0" Grid.Row="2" Click="BtnLogin_Click" IsDefault="True" />
         <Button Content="Cancel" Margin="10" Grid.Row="3" Click="BtnClose_Click" />
     </Grid>
 </Window>

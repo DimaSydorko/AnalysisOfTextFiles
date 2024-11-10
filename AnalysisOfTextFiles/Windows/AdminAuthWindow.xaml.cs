@@ -13,7 +13,10 @@ public partial class AdminAuthWindow
     InitializeComponent();
   }
 
-  public event VisibilityChangedEventHandler IsAdminEditBtn, IsAdminChangePassBtn, IsAdminAuthBtn, IsAdminGetDocSttingsBtn;
+  public event VisibilityChangedEventHandler IsAdminEditBtn,
+    IsAdminChangePassBtn,
+    IsAdminAuthBtn,
+    IsAdminGetDocSttingsBtn;
 
   private void BtnLogin_Click(object sender, RoutedEventArgs e)
   {
@@ -40,7 +43,7 @@ public partial class AdminAuthWindow
 
   private void BtnClose_Click(object sender, RoutedEventArgs e)
   {
-    Close();
+    Hide();
   }
 
   public static bool VerifyPassword(string password)
@@ -58,15 +61,9 @@ public partial class AdminAuthWindow
 
     if (!string.IsNullOrEmpty(storedPass))
     {
-      if (string.Equals(encodedPass, storedPass))
-        return true;
-      return false;
+      return string.Equals(encodedPass, storedPass);
     }
-
-    {
-      if (string.Equals(password, "admin"))
-        return true;
-      return false;
-    }
+    
+    return string.Equals(password, "admin");
   }
 }

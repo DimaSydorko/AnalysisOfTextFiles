@@ -20,7 +20,7 @@
             <TextBlock Text="Repeat:" Margin="10" VerticalAlignment="Center" />
             <PasswordBox x:Name="repeatPassword" Margin="10" VerticalAlignment="Center" Width="200" />
         </Grid>
-        <Button Content="Change password" Margin="10 0" Grid.Row="3" Click="BtnSubmit_Click" />
+        <Button Content="Change password" Margin="10 0" Grid.Row="3" Click="BtnSubmit_Click" IsDefault="True" />
         <Button Content="Cancel" Margin="10" Grid.Row="4" Click="BtnClose_Click" />
     </Grid>
 </Window>

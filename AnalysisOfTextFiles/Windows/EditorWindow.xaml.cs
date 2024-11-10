@@ -19,12 +19,22 @@ public partial class EditorWindow
     AdminSettings.SetStyleSettings(text, keyWordText);
 
     DialogResult = true;
-    Close();
+    Hide();
   }
 
   private void BtnCancel_Click(object sender, RoutedEventArgs e)
   {
     DialogResult = false;
-    Close();
+    Hide();
+  }
+  
+  private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+  {
+    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+    {
+      FileName = e.Uri.AbsoluteUri,
+      UseShellExecute = true
+    });
+    e.Handled = true;
   }
 }
