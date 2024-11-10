@@ -40,35 +40,35 @@ public class PageProperties
             }
             else if (line.StartsWith("marginTop"))
             {
-                marginTop = ParseSm(line.Split('=')[1].Trim());
+                marginTop = ParseCm(line.Split('=')[1].Trim());
             }
             else if (line.StartsWith("marginBottom"))
             {
-                marginBottom = ParseSm(line.Split('=')[1].Trim());
+                marginBottom = ParseCm(line.Split('=')[1].Trim());
             }
             else if (line.StartsWith("marginLeft"))
             {
-                marginLeft = ParseSm(line.Split('=')[1].Trim());
+                marginLeft = ParseCm(line.Split('=')[1].Trim());
             }
             else if (line.StartsWith("marginRight"))
             {
-                marginRight = ParseSm(line.Split('=')[1].Trim());
+                marginRight = ParseCm(line.Split('=')[1].Trim());
             }
             else if (line.StartsWith("marginHeader"))
             {
-                marginHeader = ParseSm(line.Split('=')[1].Trim());
+                marginHeader = ParseCm(line.Split('=')[1].Trim());
             }
             else if (line.StartsWith("marginFooter"))
             {
-                marginFooter = ParseSm(line.Split('=')[1].Trim());
+                marginFooter = ParseCm(line.Split('=')[1].Trim());
             }
         }
 
         return new WPage(size, orientation, marginTop, marginBottom, marginLeft, marginRight, marginHeader, marginFooter);
     }
 
-    private static float ParseSm(string value)
+    private static float ParseCm(string value)
     {
-        return float.Parse(value.Replace("sm", "").Trim(), CultureInfo.InvariantCulture);
+        return float.Parse(value.Replace("cm", "").Trim(), CultureInfo.InvariantCulture);
     }
 }

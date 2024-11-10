@@ -7,12 +7,12 @@ namespace AnalysisOfTextFiles.Objects;
 
 public class CheckPage
 {
-  private static int SmInPoints(double sm)
+  private static int CmInPoints(double cm)
   {
-    return Convert.ToInt32(Math.Ceiling(sm * 567));
+    return Convert.ToInt32(Math.Ceiling(cm * 567));
   }
 
-  private static double PointsInSm(int points)
+  private static double PointsInCm(int points)
   {
     return Math.Round((double)points / 567, 2, MidpointRounding.ToEven);
   }
@@ -84,17 +84,17 @@ public class CheckPage
     {
       if (!IsEqual(actual, expected, 3))
       {
-        WReport.Write($"{label}: {PointsInSm(actual)} sm -> {PointsInSm(expected)} sm");
+        WReport.Write($"{label}: {PointsInCm(actual)} cm -> {PointsInCm(expected)} cm");
       }
     }
 
-    CompareAndReport("Margin Top", pageMargin.Top, SmInPoints(page.MarginTop));
-    CompareAndReport("Margin Bottom", pageMargin.Bottom, SmInPoints(page.MarginBottom));
-    CompareAndReport("Margin Left", (int)pageMargin.Left.Value, SmInPoints(page.MarginLeft));
-    CompareAndReport("Margin Right", (int)pageMargin.Right.Value, SmInPoints(page.MarginRight));
+    CompareAndReport("Margin Top", pageMargin.Top, CmInPoints(page.MarginTop));
+    CompareAndReport("Margin Bottom", pageMargin.Bottom, CmInPoints(page.MarginBottom));
+    CompareAndReport("Margin Left", (int)pageMargin.Left.Value, CmInPoints(page.MarginLeft));
+    CompareAndReport("Margin Right", (int)pageMargin.Right.Value, CmInPoints(page.MarginRight));
 
-    CompareAndReport("Margin from Header", (int)pageMargin.Header.Value, SmInPoints(page.MarginHeader));
-    CompareAndReport("Margin from Footer", (int)pageMargin.Footer.Value, SmInPoints(page.MarginFooter));
+    CompareAndReport("Margin from Header", (int)pageMargin.Header.Value, CmInPoints(page.MarginHeader));
+    CompareAndReport("Margin from Footer", (int)pageMargin.Footer.Value, CmInPoints(page.MarginFooter));
   }
 
   public static void AnalisePageSettings()
@@ -126,12 +126,12 @@ public class CheckPage
     var pageMargin = section.GetFirstChild<PageMargin>();
     if (pageMargin != null)
     {
-      WReport.WriteSettings($"marginTop={PointsInSm(pageMargin.Top)}sm");
-      WReport.WriteSettings($"marginBottom={PointsInSm(pageMargin.Bottom)}sm");
-      WReport.WriteSettings($"marginLeft={PointsInSm((int)pageMargin.Left.Value)}sm");
-      WReport.WriteSettings($"marginRight={PointsInSm((int)pageMargin.Right.Value)}sm");
-      WReport.WriteSettings($"marginHeader={PointsInSm((int)pageMargin.Header.Value)}sm");
-      WReport.WriteSettings($"marginFooter={PointsInSm((int)pageMargin.Footer.Value)}sm");
+      WReport.WriteSettings($"marginTop={PointsInCm(pageMargin.Top)}cm");
+      WReport.WriteSettings($"marginBottom={PointsInCm(pageMargin.Bottom)}cm");
+      WReport.WriteSettings($"marginLeft={PointsInCm((int)pageMargin.Left.Value)}cm");
+      WReport.WriteSettings($"marginRight={PointsInCm((int)pageMargin.Right.Value)}cm");
+      WReport.WriteSettings($"marginHeader={PointsInCm((int)pageMargin.Header.Value)}cm");
+      WReport.WriteSettings($"marginFooter={PointsInCm((int)pageMargin.Footer.Value)}cm");
       WReport.WriteSettings("");
     }
   }
