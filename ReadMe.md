@@ -1,14 +1,16 @@
-# README: Style and Page Settings Configuration
+# README
+
+## Style and Page Settings Configuration
 
 This document explains the configuration settings for style formatting (`[STYLE_NAME]` sections) and page settings (`{PAGE}` section) in documents for standardized formatting and layout requirements.
 
 ---
 
-## Page Settings `{PAGE}`
+### Page Settings `{PAGE}`
 
 The `{PAGE}` section configures general layout settings of the document. Options include page size, orientation, and margins.
 
-### Example:
+#### Example:
 
 ```plaintext
 {PAGE}
@@ -22,7 +24,7 @@ marginHeader=1.25sm
 marginFooter=1.25sm
 ```
 
-### Parameters:
+#### Parameters:
 
 - **pageSize**: Defines the page size. Options: `A3`, `A4`, `A5`, `letter`.
 - **orientation**: Page orientation. Options: `portrait`, `landscape`.
@@ -31,11 +33,11 @@ marginFooter=1.25sm
 
 ---
 
-## Style Settings `[STYLE_NAME]`
+### Style Settings `[STYLE_NAME]`
 
 Each `[STYLE_NAME]` section specifies settings for a particular style. These are used to control font size, color, alignment, spacing, and other text properties.
 
-### Example:
+#### Example:
 
 ```plaintext
 [ЕОМ: Назва таблиці]
@@ -55,7 +57,7 @@ after="ЕОМ: Номер таблиці"
 before="ЕОМ: Таблиця_центр", "ЕОМ: Таблиця_лів"
 ```
 
-### Parameters:
+#### Parameters:
 
 - **name**: Identifier for the style.
 - **size**: Font size.
@@ -74,7 +76,7 @@ before="ЕОМ: Таблиця_центр", "ЕОМ: Таблиця_лів"
 
 ---
 
-## Sample Configuration Overview
+### Sample Configuration Overview
 
 Below is an overview of frequently used styles:
 
