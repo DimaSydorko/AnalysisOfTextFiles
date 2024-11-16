@@ -11,15 +11,15 @@ public class Order
     Before,
     After
   }
-    public static void CheckParagraph(Paragraph paragraph, CheckParagraph.ContentType type, string styleName, int idx)
+    public static void CheckParagraph(Paragraph paragraph, Paragraph prevParagraph, Paragraph nextParagraph, CheckParagraph.ContentType type, string styleName, int idx)
   {
     StyleProperties? styleSettings = State.StylesSettings.FirstOrDefault(s => s.name == styleName);
 
     if (styleSettings?.before != null && styleSettings.before.Count > 0)
     {
-      if (State.NextParagraph != null)
+      if (nextParagraph != null)
       {
-        _CheckParagraphDependence(paragraph, State.NextParagraph, idx, type, styleSettings.before,
+        _CheckParagraphDependence(paragraph, nextParagraph, idx, type, styleSettings.before,
           OrderCheckType.Before);
       }
       else
@@ -30,9 +30,9 @@ public class Order
 
     else if (styleSettings?.after != null && styleSettings.after.Count > 0)
     {
-      if (State.PrevParagraph != null)
+      if (prevParagraph != null)
       {
-        _CheckParagraphDependence(paragraph, State.PrevParagraph, idx, type, styleSettings.after, OrderCheckType.After);
+        _CheckParagraphDependence(paragraph, prevParagraph, idx, type, styleSettings.after, OrderCheckType.After);
       }
       else
       {

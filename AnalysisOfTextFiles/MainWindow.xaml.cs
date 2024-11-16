@@ -111,7 +111,7 @@ public partial class MainWindow : INotifyPropertyChanged
 
     if (State.FilePath.full == null) return;
 
-    WordprocessingDocument document = null;
+    WordprocessingDocument document;
     try
     {
       using var sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
@@ -122,23 +122,17 @@ public partial class MainWindow : INotifyPropertyChanged
     catch (Exception ex)
     {
       MessageBox.Show(ex.Message, "Error");
+      return;
     }
 
-    if (document != null)
-    {
-      State.WDocument = document;
-
-      var stopwatch = new Stopwatch();
-      stopwatch.Start();
-
-      WParse.Content();
-
-      stopwatch.Stop();
-      var elapsedTime = stopwatch.Elapsed;
-
-      var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
-      MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
-    }
+    State.WDocument = document;
+    var stopwatch = new Stopwatch();
+    stopwatch.Start();
+    WParse.Content();
+    stopwatch.Stop();
+    var elapsedTime = stopwatch.Elapsed;
+    var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
+    MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
   }
 
   public void GetStyles_OnClick(object sender, RoutedEventArgs e)
@@ -178,6 +172,7 @@ public partial class MainWindow : INotifyPropertyChanged
   {
     IsСomments = !IsСomments;
   }
+
   private void StrictCheckBox_OnClick(object sender, RoutedEventArgs e)
   {
     IsStrictMode = !IsStrictMode;

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Toc = DocumentFormat.OpenXml.Wordprocessing.Table;
 
 public class WParse
 {
@@ -35,18 +34,19 @@ public class WParse
     var body = State.WDocument.MainDocumentPart.Document.Body;
 
     var descendants = body.Descendants<Paragraph>().ToList();
-    foreach (var parDesc in descendants)
+
+    void AnalyzeParagraph(Paragraph parDesc)
     {
       var idx = descendants.IndexOf(parDesc);
-      State.NextParagraph = idx == (descendants.Count - 1) ? null : descendants[idx + 1];
-      State.PrevParagraph = idx == 0 ? null : descendants[idx - 1];
+      Paragraph nextParagraph = idx == (descendants.Count - 1) ? null : descendants[idx + 1];
+      Paragraph prevParagraph = idx == 0 ? null : descendants[idx - 1];
 
-      string prev = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(State.PrevParagraph));
+      string prev = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(prevParagraph));
       string curr = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(parDesc));
-      string next = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(State.NextParagraph));
+      string next = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(nextParagraph));
 
-      // Check if it's TOC
-      if (parDesc.Parent.LocalName == "sdtContent") CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.TOC);
+      if (parDesc.Parent.LocalName == "sdtContent")
+        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.TOC);
       else if (parDesc.Parent != null && parDesc.Parent is TableCell)
       {
         var cell = (TableCell)parDesc.Parent;
@@ -60,11 +60,16 @@ public class WParse
 
         var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
 
-        // This is a table row
-        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Table, Wtable);
-        // This is an ordinary paragraph
+        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.Table,
+          Wtable);
       }
-      else CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Paragraph);
+      else
+        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.Paragraph);
+    }
+
+    foreach (var parDesc in descendants)
+    {
+      AnalyzeParagraph(parDesc);
     }
   }
 
@@ -81,7 +86,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Header);
+        CheckParagraph.ParagraphCheck(paragraph, null, null, idx, CheckParagraph.ContentType.Header);
       }
     }
   }
@@ -97,7 +102,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Footer);
+        CheckParagraph.ParagraphCheck(paragraph, null, null, idx, CheckParagraph.ContentType.Footer);
       }
     }
   }

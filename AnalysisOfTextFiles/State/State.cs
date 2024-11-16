@@ -10,8 +10,6 @@ public class State
   public static bool IsAdminAuth { get; set; } = false;
   public static string KeyWord { get; set; } = "";
   public static string Content { get; set; } = "";
-  public static Paragraph?  NextParagraph { get; set; } = null;
-  public static Paragraph? PrevParagraph { get; set; } = null;
   public static List<WStyle> Styles { get; set; } = new();
   public static WPage PageSettings { get; set; } = null;
   public static List<StyleProperties> StylesSettings { get; set; } = new();

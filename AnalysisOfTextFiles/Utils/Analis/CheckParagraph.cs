@@ -63,7 +63,7 @@ public class CheckParagraph
     return style;
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)
+  public static void ParagraphCheck(Paragraph paragraph, Paragraph prevParagraph, Paragraph nextParagraph, int idx, ContentType type, WTable? table = null)
   {
     var isParaExist = paragraph.ParagraphProperties != null;
     var hasInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
@@ -79,7 +79,7 @@ public class CheckParagraph
       if (isParaExist && paragraph.ParagraphProperties?.ParagraphStyleId != null)
       {
         string? styleName = WDecoding.RemoveSuffixIfExists(GetParagraphStyle(paragraph));
-        Order.CheckParagraph(paragraph, type, styleName, idx);
+        Order.CheckParagraph(paragraph, prevParagraph, nextParagraph, type, styleName, idx);
 
         WStyle style = GetParagraphWStyle(paragraph);
         // if the value of the pStyle is allowed => skip the paragraph
