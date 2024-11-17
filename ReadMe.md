@@ -1,6 +1,10 @@
 # README
 
-#### Run comands:
+## Last Version
+
+[win x86 v1.2.4](https://drive.google.com/drive/folders/1FMP3pcXSDs3SHVrGwEmWudRT5iMuGxJv)
+
+## Run comands:
 
 build: `dotnet publish -c Release -r win-x86 --self-contained true /p:PublishSingleFile=true`
 
