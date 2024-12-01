@@ -45,7 +45,8 @@
         </Grid>
         <Grid Grid.Row="3" Margin="0,4,0,10" VerticalAlignment="Center" HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="142" Content="Change password 🔐"
+                <Button Name="ChangePass" Visibility="{Binding IsAdminChangePassBtn}" Width="142"
+                        Content="Change password 🔐"
                         Margin="10,0,10,0" Click="AdminChangePass_OnClick" Background="#FFF" />
                 <Button Name="AdminEdit" Visibility="{Binding IsAdminEditBtn}" Width="88" Content="Settings 🛠️"
                         Margin="10,0,10,0" Click="AdminEdit_OnClick" Background="#FFF" />

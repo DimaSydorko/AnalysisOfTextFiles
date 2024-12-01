@@ -5,13 +5,13 @@
         <TargetFramework>net7.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <RuntimeIdentifier>win-x86</RuntimeIdentifier>
-<!--        <PublishSingleFile>true</PublishSingleFile>-->
+        <!--        <PublishSingleFile>true</PublishSingleFile>-->
         <SelfContained>true</SelfContained>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="DocumentFormat.OpenXml" Version="2.19.0" />
+        <PackageReference Include="DocumentFormat.OpenXml" Version="2.19.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -36,9 +36,9 @@
             <SubType>Designer</SubType>
         </Page>
         <Page Update="Windows\AboutWindow.xaml">
-          <Generator>MSBuild:Compile</Generator>
-          <XamlRuntime>Wpf</XamlRuntime>
-          <SubType>Designer</SubType>
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
         </Page>
     </ItemGroup>
 

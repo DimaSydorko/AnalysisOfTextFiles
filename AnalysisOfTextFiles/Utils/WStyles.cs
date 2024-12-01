@@ -129,10 +129,10 @@ public class WStyles
 
     properties.name = wStyle.Decoded;
 
-      var val = runProperties?.FontSize?.Val?.Value ?? runProperties?.FontSizeComplexScript?.Val?.Value ?? "24";
-      var halfVal = int.Parse(val) / 2;
-      properties.size = $"{halfVal}";
-    
+    var val = runProperties?.FontSize?.Val?.Value ?? runProperties?.FontSizeComplexScript?.Val?.Value ?? "24";
+    var halfVal = int.Parse(val) / 2;
+    properties.size = $"{halfVal}";
+
     if (properties.size == null)
     {
       int test = 1;
@@ -217,14 +217,14 @@ public class WStyles
     if (styleDefinitionsPart != null)
     {
       var stylesCheck = styleDefinitionsPart.Styles;
-      List<string> alreadyChecked = new List<string>();
+      List<string> alreadyChecked = new();
       foreach (var style in stylesCheck.Elements<Style>())
       {
         var styleVal = style?.StyleId?.Value;
         var wStyle = WStyle.GetStyleFromEncoded(styleVal ?? style?.StyleId);
         if (wStyle != null)
         {
-          bool isChecked = alreadyChecked.Contains(wStyle.Decoded);
+          var isChecked = alreadyChecked.Contains(wStyle.Decoded);
 
           if (!isChecked && style.StyleRunProperties != null)
           {

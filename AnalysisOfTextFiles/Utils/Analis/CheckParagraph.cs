@@ -16,18 +16,15 @@ public class CheckParagraph
     Footer,
     TOC
   }
-  
+
   public static List<string> allowedStyles = new() { "Heading1", "Heading2", "Heading3", "TOC1", "TOC2" };
 
   public static bool IsValidWStyle(WStyle style)
   {
-    bool isInSettings = Convert.ToBoolean(State.StylesSettings.Exists(s => s.name == style.Decoded));
+    var isInSettings = Convert.ToBoolean(State.StylesSettings.Exists(s => s.name == style.Decoded));
 
-    if (isInSettings)
-    {
-      return true;
-    }
-    
+    if (isInSettings) return true;
+
     var keyWordLength = State.KeyWord.Length;
     if (keyWordLength <= style.Decoded.Length)
     {
@@ -43,69 +40,78 @@ public class CheckParagraph
   {
     if (paragraph == null) return "Unknown";
 
-    bool isParExist = paragraph.ParagraphProperties != null && paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
+    var isParExist = paragraph.ParagraphProperties != null &&
+                     paragraph.ParagraphProperties?.ParagraphStyleId?.Val != null;
 
     if (isParExist)
     {
-      string? styleName = paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value ?? paragraph.ParagraphProperties?.ParagraphStyleId?.Val;
+      var styleName = paragraph.ParagraphProperties?.ParagraphStyleId?.Val?.Value ??
+                      paragraph.ParagraphProperties?.ParagraphStyleId?.Val;
       var style = WStyle.GetDecodedStyle(styleName);
       return style;
     }
 
     return "Normal";
   }
-  
+
   public static WStyle GetParagraphWStyle(Paragraph? paragraph)
   {
-    string styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val.Value ?? paragraph.ParagraphProperties.ParagraphStyleId.Val;
-    WStyle style = WStyle.GetStyleFromEncoded(styleName);
-    
+    var styleName = paragraph.ParagraphProperties.ParagraphStyleId.Val.Value ??
+                    paragraph.ParagraphProperties.ParagraphStyleId.Val;
+    var style = WStyle.GetStyleFromEncoded(styleName);
+
     return style;
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, Paragraph prevParagraph, Paragraph nextParagraph, int idx, ContentType type, WTable? table = null)
+  private static void StyleCheck(Paragraph? paragraph, string styleName, int idx, ContentType type,
+    WTable? table = null)
   {
-    var isParaExist = paragraph.ParagraphProperties != null;
-    var hasInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
-    var hasImage = paragraph.Descendants<Drawing>().Any() || paragraph.Descendants<Inline>().Any();
-
     void onComment(string styleName, WReport.TitleType? titleType = WReport.TitleType.Wrong)
     {
       WReport.OnMessage(paragraph, type, idx, styleName, table, titleType);
     }
 
+    var style = GetParagraphWStyle(paragraph);
+    // if the value of the pStyle is allowed => skip the paragraph
+    if (style != null)
+    {
+      if (!IsValidWStyle(style)) onComment(style.Decoded);
+      else if (CheckEdited.IsEditedStyle(paragraph)) onComment(style.Decoded, WReport.TitleType.Edited);
+    }
+    else
+    {
+      var dec = WDecoding.GetOldDecStyle(styleName);
+      if (!allowedStyles.Contains(dec))
+      {
+        if (dec == null) onComment($"Undefined Style name '{styleName}'");
+        else onComment(dec);
+      }
+    }
+  }
+
+  public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)
+  {
+    var isParaExist = paragraph.ParagraphProperties != null;
+    var hasInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
+    var hasImage = paragraph.Descendants<Drawing>().Any() || paragraph.Descendants<Inline>().Any();
+
     if (hasInnerText || hasImage)
     {
       if (isParaExist && paragraph.ParagraphProperties?.ParagraphStyleId != null)
       {
-        string? styleName = WDecoding.RemoveSuffixIfExists(GetParagraphStyle(paragraph));
-        Order.CheckParagraph(paragraph, prevParagraph, nextParagraph, type, styleName, idx);
+        var styleName = WDecoding.RemoveSuffixIfExists(GetParagraphStyle(paragraph));
 
-        WStyle style = GetParagraphWStyle(paragraph);
-        // if the value of the pStyle is allowed => skip the paragraph
-        if (style != null)
-        {
-          if (!IsValidWStyle(style)) onComment(style.Decoded);
-          else if (CheckEdited.IsEditedStyle(paragraph)) onComment(style.Decoded, WReport.TitleType.Edited);
-        }
-        else
-        {
-          string dec = WDecoding.GetOldDecStyle(styleName);
-          if (!allowedStyles.Contains(dec))
-          {
-            if (dec == null) onComment($"Undefined Style name '{styleName}'");
-            else onComment(dec);
-          }
-        }
+        if (State.IsOrderCheck) Order.CheckParagraph(paragraph, type, styleName, idx, table);
+        else StyleCheck(paragraph, styleName, idx, type, table);
       }
-      else
+      else if (!State.IsOrderCheck)
       {
-        onComment("Normal");
+        WReport.OnMessage(paragraph, type, idx, "Normal", table);
       }
     }
-    else
+    else if (!State.IsOrderCheck)
     {
-      WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
+      // WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
     }
   }
 }

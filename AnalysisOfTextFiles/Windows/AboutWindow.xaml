@@ -23,8 +23,9 @@
         </Grid>
         <Grid Grid.Row="3">
             <TextBlock Margin="2" VerticalAlignment="Center" TextAlignment="Center">
-                <Hyperlink NavigateUri="https://github.com/DimaSydorko/AnalysisOfTextFiles?tab=readme-ov-file#last-versions"
-                           RequestNavigate="Hyperlink_RequestNavigate">
+                <Hyperlink
+                    NavigateUri="https://github.com/DimaSydorko/AnalysisOfTextFiles?tab=readme-ov-file#last-versions"
+                    RequestNavigate="Hyperlink_RequestNavigate">
                     Check for updates
                 </Hyperlink>
             </TextBlock>

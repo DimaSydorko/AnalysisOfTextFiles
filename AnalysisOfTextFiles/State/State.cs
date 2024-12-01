@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 public class State
 {
@@ -12,6 +11,9 @@ public class State
   public static string Content { get; set; } = "";
   public static List<WStyle> Styles { get; set; } = new();
   public static WPage PageSettings { get; set; } = null;
+  public static string? NextParagraphName { get; set; } = null;
+  public static string? PrevParagraphName { get; set; } = null;
+  public static bool IsOrderCheck { get; set; } = false;
   public static List<StyleProperties> StylesSettings { get; set; } = new();
   public static WFilePath FilePath { get; set; } = new();
   public static WordprocessingDocument WDocument { get; set; } = null;

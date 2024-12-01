@@ -59,11 +59,8 @@ public partial class AdminAuthWindow
 
     var encodedPass = AdminSettings.EncodeDataToHash(password);
 
-    if (!string.IsNullOrEmpty(storedPass))
-    {
-      return string.Equals(encodedPass, storedPass);
-    }
-    
+    if (!string.IsNullOrEmpty(storedPass)) return string.Equals(encodedPass, storedPass);
+
     return string.Equals(password, "admin");
   }
 }

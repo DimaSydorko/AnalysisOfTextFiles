@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
+using System.Windows.Navigation;
 
 namespace AnalysisOfTextFiles;
 
@@ -27,10 +29,10 @@ public partial class EditorWindow
     DialogResult = false;
     Hide();
   }
-  
-  private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+
+  private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
   {
-    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+    Process.Start(new ProcessStartInfo
     {
       FileName = e.Uri.AbsoluteUri,
       UseShellExecute = true

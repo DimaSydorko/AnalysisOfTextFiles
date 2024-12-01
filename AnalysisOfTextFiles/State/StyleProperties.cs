@@ -18,10 +18,10 @@ public class StyleProperties
   public string italic { get; set; }
   public string underline { get; set; }
   public string capitalize { get; set; }
-  
+
   public List<string> after { get; set; }
-  
-  public List<string> before { get; set; } 
+
+  public List<string> before { get; set; }
 
 
   public static List<StyleProperties> GetSettingsList()
@@ -30,14 +30,14 @@ public class StyleProperties
 
     var lines = State.Content.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-    List<string> getOrder (string value)
+    List<string> getOrder(string value)
     {
-     return value
+      return value
         .Split(',')
         .Select(s => s.Trim().Trim('"'))
         .ToList();
     }
-    
+
     if (lines.Length != 0)
     {
       StyleProperties currentStyle = null;

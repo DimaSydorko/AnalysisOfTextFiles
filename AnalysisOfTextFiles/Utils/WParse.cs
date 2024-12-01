@@ -14,6 +14,7 @@ public class WParse
     _Header();
     _Footer();
     _Body();
+    _Body(true);
 
     State.WDocument.Close();
   }
@@ -27,26 +28,30 @@ public class WParse
     State.WDocument.Close();
   }
 
-  private static void _Body()
+  private static void _Body(bool isOrderCheck = false)
   {
-    WReport.Write("----Boody----");
+    WReport.Write(isOrderCheck ? "----Order----" : "----Body----");
 
     var body = State.WDocument.MainDocumentPart.Document.Body;
-
     var descendants = body.Descendants<Paragraph>().ToList();
+    State.IsOrderCheck = isOrderCheck;
 
     void AnalyzeParagraph(Paragraph parDesc)
     {
       var idx = descendants.IndexOf(parDesc);
-      Paragraph nextParagraph = idx == (descendants.Count - 1) ? null : descendants[idx + 1];
-      Paragraph prevParagraph = idx == 0 ? null : descendants[idx - 1];
-
-      string prev = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(prevParagraph));
-      string curr = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(parDesc));
-      string next = WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(nextParagraph));
+      if (State.IsOrderCheck)
+      {
+        State.NextParagraphName =
+          WDecoding.RemoveSuffixIfExists(
+            CheckParagraph.GetParagraphStyle(idx == descendants.Count - 1 ? null : descendants[idx + 1]));
+        State.PrevParagraphName =
+          WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(idx == 0 ? null : descendants[idx - 1]));
+      }
 
       if (parDesc.Parent.LocalName == "sdtContent")
-        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.TOC);
+      {
+        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.TOC);
+      }
       else if (parDesc.Parent != null && parDesc.Parent is TableCell)
       {
         var cell = (TableCell)parDesc.Parent;
@@ -60,17 +65,15 @@ public class WParse
 
         var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
 
-        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.Table,
-          Wtable);
+        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Table, Wtable);
       }
       else
-        CheckParagraph.ParagraphCheck(parDesc, prevParagraph, nextParagraph, idx, CheckParagraph.ContentType.Paragraph);
+      {
+        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Paragraph);
+      }
     }
 
-    foreach (var parDesc in descendants)
-    {
-      AnalyzeParagraph(parDesc);
-    }
+    foreach (var parDesc in descendants) AnalyzeParagraph(parDesc);
   }
 
   private static void _Header()
@@ -86,7 +89,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        CheckParagraph.ParagraphCheck(paragraph, null, null, idx, CheckParagraph.ContentType.Header);
+        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Header);
       }
     }
   }
@@ -102,7 +105,7 @@ public class WParse
       foreach (var paragraph in paragraphs)
       {
         var idx = paragraphs.IndexOf(paragraph);
-        CheckParagraph.ParagraphCheck(paragraph, null, null, idx, CheckParagraph.ContentType.Footer);
+        CheckParagraph.ParagraphCheck(paragraph, idx, CheckParagraph.ContentType.Footer);
       }
     }
   }

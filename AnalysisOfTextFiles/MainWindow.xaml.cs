@@ -9,9 +9,9 @@ namespace AnalysisOfTextFiles;
 
 public partial class MainWindow : INotifyPropertyChanged
 {
-  private Visibility _isAdminEditBtn, _isAdminAuthBtn, _isAdminChangePassBtn, _IsAdminGetDocSttingsBtn;
-  private readonly AdminAuthWindow adminAuthWindow = new();
   private readonly AboutWindow aboutWindow = new();
+  private readonly AdminAuthWindow adminAuthWindow = new();
+  private Visibility _isAdminEditBtn, _isAdminAuthBtn, _isAdminChangePassBtn, _IsAdminGetDocSttingsBtn;
 
   public MainWindow()
   {
@@ -42,7 +42,7 @@ public partial class MainWindow : INotifyPropertyChanged
   }
 
   private static bool IsСomments { get; set; } = true;
-  private static bool IsStrictMode { get; set; } = false;
+  private static bool IsStrictMode { get; set; }
 
   public Visibility IsAdminEditBtn
   {

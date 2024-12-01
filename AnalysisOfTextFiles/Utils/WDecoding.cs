@@ -4,13 +4,11 @@ public class WDecoding
 {
   public static string? RemoveSuffixIfExists(string? input)
   {
-    string suffix = " Char";
-    string suffixUkr = " Знак";
+    var suffix = " Char";
+    var suffixUkr = " Знак";
 
     if (input != null && (input.EndsWith(suffix) || input.EndsWith(suffixUkr)))
-    {
       return input.Substring(0, input.Length - suffix.Length);
-    }
 
     return input;
   }

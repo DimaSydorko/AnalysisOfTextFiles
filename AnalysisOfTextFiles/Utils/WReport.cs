@@ -1,33 +1,35 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Collections.Generic;
 
 namespace AnalysisOfTextFiles.Objects;
 
 public class WReport
 {
+  public enum OrderType
+  {
+    MissedAfter,
+    MissedBefore,
+    InsteadBefore,
+    InsteadAfter
+  }
+
   public enum TitleType
   {
     Empty,
     Order,
     Edited,
     Wrong
-  }  
-  public enum OrderType
-  {
-    MissedAfter,
-    MissedBefore,
-    InsteadBefore,
-    InsteadAfter,
   }
+
   public static void Write(string reportMessage, bool isRewrite = false, bool isSettings = false)
   {
     var mess = $"{reportMessage}\n";
     var filePath = isSettings ? State.FilePath.stylesSettings : State.FilePath.report;
-    
+
     if (isRewrite) File.WriteAllText(filePath, mess);
     else File.AppendAllText(filePath, mess);
   }
@@ -42,16 +44,18 @@ public class WReport
     var timestamp = DateTime.Now.ToString("F");
     Write($"-----------------Report ({timestamp})----------------", true);
   }
-    public static void CreateStylesFile()
+
+  public static void CreateStylesFile()
   {
     var timestamp = DateTime.Now.ToString("F");
     Write($"-----------------Styles settings ({timestamp})----------------", true, true);
   }
-  
-  public static void Order(Paragraph paragraph, CheckParagraph.ContentType type, int idx, string styleName, List<string> order, OrderType orderType, string? wrongOrder = "",  WTable? table = null)
+
+  public static void Order(Paragraph paragraph, CheckParagraph.ContentType type, int idx, string styleName,
+    List<string> order, OrderType orderType, string? wrongOrder = "", WTable? table = null)
   {
-    string allowed = string.Join(", ", order.Select(e => $"'{e}'"));
-    string extraMessage = orderType switch
+    var allowed = string.Join(", ", order.Select(e => $"'{e}'"));
+    var extraMessage = orderType switch
     {
       OrderType.MissedAfter => $"mast be after {allowed}",
       OrderType.MissedBefore => $"mast be before {allowed}",
@@ -59,7 +63,7 @@ public class WReport
       OrderType.InsteadBefore => $"mast be before {allowed}, But now is '{wrongOrder}'",
       _ => $"mast be after {allowed}"
     };
-    
+
     OnMessage(paragraph, type, idx, styleName, table, TitleType.Order, extraMessage);
   }
 
@@ -72,7 +76,7 @@ public class WReport
     TitleType? title = TitleType.Wrong,
     string? extraMessage = null)
   {
-    string message = title switch
+    var message = title switch
     {
       TitleType.Empty => "Empty Line",
       TitleType.Wrong => $"Style: '{styleName}'",
@@ -80,29 +84,24 @@ public class WReport
       TitleType.Edited => $"Edited style: '{styleName}'",
       _ => $"Style: '{styleName}'"
     };
-    
-    bool isComment = type != CheckParagraph.ContentType.Header && type != CheckParagraph.ContentType.Footer;
-    if (isComment && State.IsСomments)
-    {
-      _AddComment(paragraph, message, title);
-    }
+
+    var isComment = type != CheckParagraph.ContentType.Header && type != CheckParagraph.ContentType.Footer;
+    if (isComment && State.IsСomments) _AddComment(paragraph, message, title);
 
     if (title != TitleType.Empty)
     {
-      string text = paragraph.InnerText;
-      string firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
+      var text = paragraph.InnerText;
+      var firstLetters = text.Length > 15 ? text.Substring(0, 15) + "..." : text;
 
-      if (firstLetters.Length > 0)
-      {
-        message = $"('{firstLetters}') {message}";
-      }
+      if (firstLetters.Length > 0) message = $"('{firstLetters}') {message}";
     }
-    
-    string report = type switch
+
+    var report = type switch
     {
       CheckParagraph.ContentType.Paragraph => $"{type} {idx + 1} {message}",
       CheckParagraph.ContentType.TOC => $"TOC Paragraph {idx + 1} {message}",
-      CheckParagraph.ContentType.Table => $"Table {table?.Idx + 1}, Row {table?.RowIdx + 1}, Cell {table?.CellIdx + 1}, Par {table?.ParIdx + 1} {message}",
+      CheckParagraph.ContentType.Table =>
+        $"Table {table?.Idx + 1}, Row {table?.RowIdx + 1}, Cell {table?.CellIdx + 1}, Par {table?.ParIdx + 1} {message}",
       _ => $"{type} {idx + 1} {message}"
     };
 
@@ -122,10 +121,8 @@ public class WReport
       comments =
         mainPart.WordprocessingCommentsPart.Comments;
       if (comments.HasChildren)
-      {
         // Obtain an unused ID.
         id = int.Parse(comments.Descendants<Comment>().Select(e => e.Id.Value).Max()) + 1;
-      }
     }
     else
     {
@@ -136,7 +133,7 @@ public class WReport
       comments = commentPart.Comments;
     }
 
-    string Author = title switch
+    var Author = title switch
     {
       TitleType.Empty => "Empty Line",
       TitleType.Wrong => "Wrong style",
@@ -144,7 +141,7 @@ public class WReport
       TitleType.Order => "Invalid Order",
       _ => string.Empty
     };
-    
+
     // Compose a new Comment and add it to the Comments part.
     var par = new Paragraph(new Run(new Text(message)));
     var cmt =
@@ -176,18 +173,13 @@ public class WReport
     var diff = "";
 
     foreach (var property in properties)
-    {
       if (property.Name != "after" && property.Name != "before")
       {
         var setting = property.GetValue(settings);
         var currValue = property.GetValue(value);
 
-        if (!Equals(setting, currValue))
-        {
-          diff += $"{property.Name}: {setting} -> {currValue}\n";
-        }
+        if (!Equals(setting, currValue)) diff += $"{property.Name}: {setting} -> {currValue}\n";
       }
-    }
 
     return diff;
   }
