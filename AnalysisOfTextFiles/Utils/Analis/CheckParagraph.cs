@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -89,7 +90,7 @@ public class CheckParagraph
     }
   }
 
-  public static void ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)
+  public static async Task ParagraphCheck(Paragraph paragraph, int idx, ContentType type, WTable? table = null)
   {
     var isParaExist = paragraph.ParagraphProperties != null;
     var hasInnerText = !string.IsNullOrEmpty(paragraph.InnerText);
@@ -100,18 +101,19 @@ public class CheckParagraph
       if (isParaExist && paragraph.ParagraphProperties?.ParagraphStyleId != null)
       {
         var styleName = WDecoding.RemoveSuffixIfExists(GetParagraphStyle(paragraph));
+        // await Task.Delay(1);
 
-        if (State.IsOrderCheck) Order.CheckParagraph(paragraph, type, styleName, idx, table);
-        else StyleCheck(paragraph, styleName, idx, type, table);
+        Order.CheckParagraph(paragraph, type, styleName, idx, table);
+        StyleCheck(paragraph, styleName, idx, type, table);
       }
-      else if (!State.IsOrderCheck)
+      else
       {
         WReport.OnMessage(paragraph, type, idx, "Normal", table);
       }
     }
-    else if (!State.IsOrderCheck)
+    else
     {
-      // WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
+      WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
     }
   }
 }

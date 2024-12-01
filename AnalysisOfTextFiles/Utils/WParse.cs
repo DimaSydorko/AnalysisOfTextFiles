@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Wordprocessing;
 
 public class WParse
 {
-  public static void Content()
+  public async static Task Content()
   {
     WReport.CreateReportFile();
     State.Styles = WStyles.GetDocStyles();
@@ -13,8 +15,7 @@ public class WParse
     _PageFormat();
     _Header();
     _Footer();
-    _Body();
-    _Body(true);
+    await Task.Run(() => _Body());
 
     State.WDocument.Close();
   }
@@ -28,29 +29,25 @@ public class WParse
     State.WDocument.Close();
   }
 
-  private static void _Body(bool isOrderCheck = false)
+  private static async Task _Body()
   {
-    WReport.Write(isOrderCheck ? "----Order----" : "----Body----");
+    WReport.Write("----Body----");
 
     var body = State.WDocument.MainDocumentPart.Document.Body;
     var descendants = body.Descendants<Paragraph>().ToList();
-    State.IsOrderCheck = isOrderCheck;
 
-    void AnalyzeParagraph(Paragraph parDesc)
+    async Task AnalyzeParagraph(Paragraph parDesc)
     {
       var idx = descendants.IndexOf(parDesc);
-      if (State.IsOrderCheck)
-      {
-        State.NextParagraphName =
-          WDecoding.RemoveSuffixIfExists(
-            CheckParagraph.GetParagraphStyle(idx == descendants.Count - 1 ? null : descendants[idx + 1]));
-        State.PrevParagraphName =
-          WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(idx == 0 ? null : descendants[idx - 1]));
-      }
+      State.NextParagraphName =
+        WDecoding.RemoveSuffixIfExists(
+          CheckParagraph.GetParagraphStyle(idx == descendants.Count - 1 ? null : descendants[idx + 1]));
+      State.PrevParagraphName =
+        WDecoding.RemoveSuffixIfExists(CheckParagraph.GetParagraphStyle(idx == 0 ? null : descendants[idx - 1]));
 
       if (parDesc.Parent.LocalName == "sdtContent")
       {
-        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.TOC);
+       await CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.TOC);
       }
       else if (parDesc.Parent != null && parDesc.Parent is TableCell)
       {
@@ -65,15 +62,20 @@ public class WParse
 
         var Wtable = new WTable(tableIdx, rowIdx, cellIdx, parIdx);
 
-        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Table, Wtable);
+        await CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Table, Wtable);
       }
       else
       {
-        CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Paragraph);
+        await CheckParagraph.ParagraphCheck(parDesc, idx, CheckParagraph.ContentType.Paragraph);
       }
     }
 
-    foreach (var parDesc in descendants) AnalyzeParagraph(parDesc);
+    foreach (var parDesc in descendants)
+    {
+      await AnalyzeParagraph(parDesc);
+
+      Console.WriteLine($"Processing at {DateTime.Now:HH:mm:ss}");
+    }
   }
 
   private static void _Header()

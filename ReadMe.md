@@ -2,6 +2,8 @@
 
 ## Last Versions
 
+[win x86 v1.2.5](https://drive.google.com/drive/folders/1sEfML7VFftfxHX5k8JWRD7VN8RXnc0dW)
+
 [win x86 v1.2.4](https://drive.google.com/drive/folders/16R07amNl3zTPtK9Q3KcJj00oelNWgGoa)
 
 [win x86 v1.2.3](https://drive.google.com/drive/folders/1L_iZZFv43d3aKCLD5kqQa7rrfKlSuxSl)

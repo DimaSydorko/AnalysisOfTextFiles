@@ -13,7 +13,6 @@ public class State
   public static WPage PageSettings { get; set; } = null;
   public static string? NextParagraphName { get; set; } = null;
   public static string? PrevParagraphName { get; set; } = null;
-  public static bool IsOrderCheck { get; set; } = false;
   public static List<StyleProperties> StylesSettings { get; set; } = new();
   public static WFilePath FilePath { get; set; } = new();
   public static WordprocessingDocument WDocument { get; set; } = null;

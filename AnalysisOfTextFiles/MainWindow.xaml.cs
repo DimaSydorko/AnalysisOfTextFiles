@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using AnalysisOfTextFiles.Objects;
 using DocumentFormat.OpenXml.Packaging;
@@ -103,7 +104,7 @@ public partial class MainWindow : INotifyPropertyChanged
     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
   }
 
-  private void Upload_OnClick(object sender, RoutedEventArgs e)
+  private async void Upload_OnClick(object sender, RoutedEventArgs e)
   {
     State.FilePath = WFilePath.Open();
     State.IsСomments = IsСomments;
@@ -128,7 +129,7 @@ public partial class MainWindow : INotifyPropertyChanged
     State.WDocument = document;
     var stopwatch = new Stopwatch();
     stopwatch.Start();
-    WParse.Content();
+    await Task.Run(() => WParse.Content());
     stopwatch.Stop();
     var elapsedTime = stopwatch.Elapsed;
     var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
