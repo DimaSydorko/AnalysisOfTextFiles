@@ -16,10 +16,10 @@
         <TextBlock Text="About 'Analyser of docx'" FontSize="18" Margin="10" Grid.Row="0" VerticalAlignment="Center"
                    HorizontalAlignment="Center" />
         <Grid Grid.Row="1">
-            <TextBlock Text="Current version: 1.2.5" Margin="2" VerticalAlignment="Center" TextAlignment="Center" />
+            <TextBlock Text="Current version: 1.2.6" Margin="2" VerticalAlignment="Center" TextAlignment="Center" />
         </Grid>
         <Grid Grid.Row="2">
-            <TextBlock Text="Updated at: 01.12.2024" Margin="2" VerticalAlignment="Center" TextAlignment="Center" />
+            <TextBlock Text="Updated at: 19.12.2024" Margin="2" VerticalAlignment="Center" TextAlignment="Center" />
         </Grid>
         <Grid Grid.Row="3">
             <TextBlock Margin="2" VerticalAlignment="Center" TextAlignment="Center">

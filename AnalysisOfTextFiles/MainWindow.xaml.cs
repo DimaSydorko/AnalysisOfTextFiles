@@ -44,6 +44,7 @@ public partial class MainWindow : INotifyPropertyChanged
 
   private static bool IsСomments { get; set; } = true;
   private static bool IsStrictMode { get; set; }
+  private static bool IsAllowEmptyLine { get; set; }
 
   public Visibility IsAdminEditBtn
   {
@@ -109,6 +110,7 @@ public partial class MainWindow : INotifyPropertyChanged
     State.FilePath = WFilePath.Open();
     State.IsСomments = IsСomments;
     State.IsStrictMode = IsStrictMode;
+    State.IsAllowEmptyLine = IsAllowEmptyLine;
 
     if (State.FilePath.full == null) return;
 
@@ -177,6 +179,11 @@ public partial class MainWindow : INotifyPropertyChanged
   private void StrictCheckBox_OnClick(object sender, RoutedEventArgs e)
   {
     IsStrictMode = !IsStrictMode;
+  } 
+  
+  private void EmptyLineCheckBox_OnClick(object sender, RoutedEventArgs e)
+  {
+    IsAllowEmptyLine = !IsAllowEmptyLine;
   }
 
   private void AdminEdit_OnClick(object sender, RoutedEventArgs e)

@@ -113,7 +113,10 @@ public class CheckParagraph
     }
     else
     {
-      WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
+      if (!State.IsAllowEmptyLine)
+      {
+        WReport.OnMessage(paragraph, type, idx, "", table, WReport.TitleType.Empty);
+      }
     }
   }
 }
