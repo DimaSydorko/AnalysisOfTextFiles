@@ -107,35 +107,40 @@ public partial class MainWindow : INotifyPropertyChanged
 
   private async void Upload_OnClick(object sender, RoutedEventArgs e)
   {
-    State.FilePath = WFilePath.Open();
+    var filePaths = WFilePath.OpenMultiple();
+    if (filePaths?.Count == 0) return;
+
     State.IsСomments = IsСomments;
     State.IsStrictMode = IsStrictMode;
     State.IsAllowEmptyLine = IsAllowEmptyLine;
 
-    if (State.FilePath.full == null) return;
-
-    WordprocessingDocument document;
-    try
+    foreach (var filePath in filePaths)
     {
-      using var sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
-      document = IsСomments
-        ? (WordprocessingDocument)sourceWordDocument.Clone(State.FilePath.analized, true)
-        : sourceWordDocument;
-    }
-    catch (Exception ex)
-    {
-      MessageBox.Show(ex.Message, "Error");
-      return;
-    }
+      State.FilePath = filePath;
 
-    State.WDocument = document;
-    var stopwatch = new Stopwatch();
-    stopwatch.Start();
-    await Task.Run(() => WParse.Content());
-    stopwatch.Stop();
-    var elapsedTime = stopwatch.Elapsed;
-    var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
-    MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
+      WordprocessingDocument document;
+      try
+      {
+        using var sourceWordDocument = WordprocessingDocument.Open(State.FilePath.full, false);
+        document = IsСomments
+          ? (WordprocessingDocument)sourceWordDocument.Clone(State.FilePath.analyzed, true)
+          : sourceWordDocument;
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message, "Error");
+        continue;
+      }
+
+      State.WDocument = document;
+      var stopwatch = new Stopwatch();
+      stopwatch.Start();
+      await Task.Run(() => WParse.Content());
+      stopwatch.Stop();
+      var elapsedTime = stopwatch.Elapsed;
+      var timeInfo = AdminSettings.IsUserAdmin() ? $" for {elapsedTime.TotalSeconds} s" : "";
+      MessageBox.Show($"File {State.FilePath.withoutExtension} analysed{timeInfo}", "Complete Status");
+    }
   }
 
   public void GetStyles_OnClick(object sender, RoutedEventArgs e)
